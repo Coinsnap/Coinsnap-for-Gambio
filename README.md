@@ -35,7 +35,7 @@ Step-by-step to install the Gambio module:
 
 # Wiki
 
-Read more about the integration configuration on [our Wiki](https://github.com/coinsnap/gambio).
+Read more about the integration configuration on [our Wiki](https://github.com/Coinsnap/coinsnap-gambio).
 
 # Release notes
 
