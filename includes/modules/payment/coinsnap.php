@@ -11,7 +11,7 @@ define( 'COINSNAP_VERSION', '1.0' );
 define( 'COINSNAP_SERVER_URL', 'https://app.coinsnap.io' );
 define( 'COINSNAP_API_PATH', '/api/v1/' );
 define( 'COINSNAP_SERVER_PATH', 'stores' );
-define( 'COINSNAP_REFERRAL_CODE', '' );
+define( 'COINSNAP_REFERRAL_CODE', 'D17689' );
 	
 class coinsnap {
 		
