@@ -16,3 +16,10 @@ Copy the entire contents of the “coinsnap-gambio directory” with your FTP cl
 
 Once you have completed the first step, you can log in with your login details on the login page.
 
+![](https://github.com/Coinsnap/coinsnap-for-Gambio/blob/master/assets/execute.jpg)
+
+### (1) Search the cache area ###
+Navigate to the toolbox and select the first section “Cache”.
+
+### (2) Empty cache ###
+Execute the module, output and text cache by clicking on the corresponding buttons.
