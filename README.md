@@ -1,8 +1,5 @@
 # Coinsnap Bitcoin and Lightning payment module for Gambio 4.5.x - 4.8.x
 
-== Supported GX versions ==
-Coinsnap Bitcoin and Lightning payment module is eligible for Gambio versions 4.5.x - 4.8.x.
-
 ## About Coinsnap Bitcoin and Lightning Payment ##
 
 With Coinsnap Bitcoin payment you can accept payments and donations online and expand your customer base internationally with support for payments in crypto currencies. 
