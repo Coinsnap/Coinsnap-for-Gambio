@@ -75,4 +75,4 @@ Enter “Coinsnap” in the “Alias for order overview” field and activate th
 #### (2) “Update” button ####
 Click on “Update” and the module is ready for use once this step has been completed.
 
-![](https://github.com/Coinsnap/Coinsnap-for-Gambio/blob/main/assets/update.png)
+<img src="https://github.com/Coinsnap/Coinsnap-for-Gambio/blob/main/assets/update.png" width="350" height="500" />
