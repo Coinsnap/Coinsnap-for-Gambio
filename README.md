@@ -24,7 +24,7 @@ Navigate to the toolbox and select the first section “Cache”.
 #### (2) Empty cache ####
 Execute the module, output and text cache by clicking on the corresponding buttons.
 
-![](https://github.com/Coinsnap/Coinsnap-for-Gambio/blob/main/assets/execute.png)
+![](https://coinsnap.io/wp-content/uploads/2023/11/Screenshot-2023-12-12-at-09.27.06.png)
 
 #### (1) Access to the Modules Centre ####
 Navigate to the “Modules” section and search for “Modules Centre” at the top. Click on it.
@@ -35,13 +35,13 @@ Select “Coinsnap Payment” and proceed to install the module.
 #### (3) Delete cache ####
 After successful installation, return to the cache area and delete the module, output and text cache again.
 
-![](https://github.com/Coinsnap/Coinsnap-for-Gambio/blob/main/assets/modules-center.png)
+![](https://coinsnap.io/wp-content/uploads/2023/11/Screenshot-2023-12-12-at-09.27.24-1.png)
 
 Now log in to your Coinsnap app with your login details and navigate to the settings.
 
 Look for the “Store settings” section in the settings, where you will find your store ID and API key. Copy these login details for further use.
 
-![](https://github.com/Coinsnap/Coinsnap-for-Gambio/blob/main/assets/coinsnap-store.png)
+![](https://coinsnap.io/wp-content/uploads/2023/11/Screenshot-2023-11-30-at-10.22.46.png)
 
 Navigate to “Modules” -> “Module Centre” -> “Coinsnap Payment” and click on “Edit” again.
 
@@ -51,7 +51,7 @@ Paste the previously copied store ID into the first field.
 #### (2) API-Key ####
 Paste the previously copied API key into the second field.
 
-![](https://github.com/Coinsnap/Coinsnap-for-Gambio/blob/main/assets/gambio-store.png)
+![](https://coinsnap.io/wp-content/uploads/2023/11/Screenshot-2023-12-12-at-09.28.31.png)
 
 After you have saved the data, your Gambio shop is successfully connected to the Coinsnap app. Let’s now proceed to enable Bitcoin+Lightning payments by following the next instructions:
 
@@ -61,11 +61,11 @@ Navigate to the section “Modules” -> “Payment systems”.
 #### (2) Open the “Miscellaneous” tab ####
 Click on the “Miscellaneous” tab at the top right-hand side.
 
-![](https://github.com/Coinsnap/Coinsnap-for-Gambio/blob/main/assets/payment-systems.png)
+![](https://coinsnap.io/wp-content/uploads/2023/11/Screenshot-2023-12-12-at-09.29.23.png)
 
 Scroll to the bottom of the page where you will find the “Added modules” section. Click on “Bitcoin + Lightning” to start the installation of the “Bitcoin + Lightning” payment method.
 
-![](https://github.com/Coinsnap/Coinsnap-for-Gambio/blob/main/assets/modules.png)
+![](https://coinsnap.io/wp-content/uploads/2023/11/Screenshot-2023-12-12-at-09.29.43-1.png)
 
 After you have installed the “Bitcoin+Lightning” payment method, continue by clicking on “Edit”.
 
@@ -75,5 +75,5 @@ Enter “Coinsnap” in the “Alias for order overview” field and activate th
 #### (2) “Update” button ####
 Click on “Update” and the module is ready for use once this step has been completed.
 
-<img src="https://github.com/Coinsnap/Coinsnap-for-Gambio/blob/main/assets/update.png" width="350" height="700" />
+<img src="https://coinsnap.io/wp-content/uploads/2023/11/Screenshot-2023-12-12-at-09.30.08.png" width="350" height="700" />
 
