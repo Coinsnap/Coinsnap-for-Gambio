@@ -1,4 +1,6 @@
-# Coinsnap Bitcoin and Lightning payment module for Gambio 4.5.x - 4.8.x
+# Coinsnap for Gambio payment plugin #
+![Image of Coinsnap for Gambio](https://coinsnap.io/wp-content/uploads/2023/11/Coinsnap-for-Gambio.png)
+## Accept Bitcoin and Lightning Payments with Gambio ##
 
 ## About Coinsnap Bitcoin and Lightning Payment ##
 
