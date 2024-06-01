@@ -43,7 +43,7 @@ Now log in to your Coinsnap app with your login details and navigate to the sett
 
 Look for the “Store settings” section in the settings, where you will find your store ID and API key. Copy these login details for further use.
 
-![](https://coinsnap.io/wp-content/uploads/2023/11/Screenshot-2023-11-30-at-10.22.46.png)
+![](https://coinsnap.io/wp-content/uploads/2023/11/Screenshot-2024-05-27-at-08.16.52.png)
 
 Navigate to “Modules” -> “Module Centre” -> “Coinsnap Payment” and click on “Edit” again.
 
