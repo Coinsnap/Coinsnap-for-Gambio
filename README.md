@@ -102,18 +102,21 @@ Step-by-step download and install the Gambio module:
 
 ![Login to Admin Panel](https://resources.coinsnap.org/products/gambio/images/screenshot-1.3.png)
 
-1.4. Go to "Toolbox" » "Cache" on the Gambio admin page
-1.5. Clear the module, output, and text cache
+1.4. Go to "Toolbox" » "Cache" on the Gambio admin page.
+
+1.5. Clear the module, output, and text cache.
 
 ![Clear the module, output, and text cache](https://resources.coinsnap.org/products/gambio/images/screenshot-1.4.png)
 
-1.6. Go to "Modules" » "Modules-Center" on the Gambio admin page and click on "Coinsnap Payment"
-1.7. Install the module
+1.6. Go to "Modules" » "Modules-Center" on the Gambio admin page and click on "Coinsnap Payment".
+
+1.7. Install the module.
 
 ![Create a Coinsnap Account](https://resources.coinsnap.org/products/gambio/images/screenshot-1.6.png)
 
-1.8. Clear the module, output, and text cache again
-1.9. Select "Modules" » "Module Center" » "Coinsnap Payment" again and click "Edit"
+1.8. Clear the module, output, and text cache again.
+
+1.9. Select "Modules" » "Module Center" » "Coinsnap Payment" again and click "Edit".
 
 ![Module edit](https://resources.coinsnap.org/products/gambio/images/screenshot-1.9.png)
 
@@ -125,13 +128,16 @@ Step-by-step download and install the Gambio module:
 
 ### Payment method installation and activation ###
 
-1.11. Go to "Modules" » "Payment Systems"
+1.11. Go to "Modules" » "Payment Systems".
+
 1.12. Click on "Miscellaneous" tab and find "added modules" and click on "Bitcoin + Lightning".
+
 1.13. Install "Bitcoin + Lightning" payment method.
 
 ![Payment method installation](https://resources.coinsnap.org/products/gambio/images/screenshot-1.12.png)
 
 1.14. Click "Edit", enter "Coinsnap" in "Alias for orders overview" field and activate payment method.
+
 1.15. Click "Update", and after that module is ready for use.
 
 ![Payment method activation](https://resources.coinsnap.org/products/gambio/images/screenshot-1.14.png)
