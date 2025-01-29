@@ -1,5 +1,5 @@
 # Coinsnap for Gambio Shop payment plugin #
-![Coinsnap for Pretix](https://resources.coinsnap.org/products/gambio/images/cover.png)
+![Coinsnap for Gambio](https://resources.coinsnap.org/products/gambio/images/cover.png)
 
 ## Accept Bitcoin and Lightning Payments with Coinsnap in Gambio Shop ##
 
@@ -17,7 +17,9 @@ The Coinsnap Gambio plugin allows you to accept Bitcoin Lightning payments in se
 
 [Coinsnap](https://coinsnap.io/en/) provides modules and plugins that enable online stores to receive Bitcoin payments from their customers' Bitcoin Lightning wallets to their own Bitcoin Lightning wallets for digital and physical goods.
 
-Gambio combines everything you need to successfully sell online: A modern, visually appealing shop-system with a large range of functions that is connected to all important marketplaces and payment systems as well as technically optimized for great search engine rankings.
+Gambio is a German shop system that offers a complete solution for online retailers with extensive functions and tools. It offers simple handling for small and medium-sized companies that want to design their own e-commerce presence.
+
+Gambio was founded in 2005 and is used by more than 25,000 e-commerce merchants, primarily in Germany, Austria and Switzerland. System combines everything you need to successfully sell online: A modern, visually appealing shop-system with a large range of functions that is connected to all important marketplaces and payment systems as well as technically optimized for great search engine rankings.
 
 * Coinsnap Gambio Demo Site: https://gambio.coinsnap.net/
 * Blog Article: https://coinsnap.io/coinsnap-for-gambio-payment-plugin/
@@ -25,11 +27,19 @@ Gambio combines everything you need to successfully sell online: A modern, visua
 
 ## Bitcoin and Lightning payments in Gambio ##
 
-![Pretix ticket sale system](https://resources.coinsnap.org/products/gambio/images/screenshot-gambio.png)
+![Gambio Shop](https://resources.coinsnap.org/products/gambio/images/screenshot-gambio.png)
 
-With the Coinsnap Bitcoin Lightning payment processing plugin you can immediately accept Bitcoin Lightning payments on your site. You don’t need your own Lightning node or any other technical requirements if you'd like to provide payments via Coinsnap payment gateway. Coinsnap Bitcoin and Lightning payment requires no minimum costs, no fixed contracts, no hidden costs.
+Gambio offers two different systems: Gambio Cloud and the self-hosted version.
+* The Gambio plugin from Coinsnap is provided free of charge for the self-hosted version.
+* The Gambio Cloud version is not yet supported.
 
-Simply register on [Coinsnap](https://app.coinsnap.io/register), enter your own Lightning address and install the Coinsnap payment module in Pretix development environment. Add your store ID and your API key which you’ll find in your Coinsnap account, and your customers can pay you with Bitcoin Lightning right away!
+With the self-hosted store software Gambio, store operators opt for a flexible and user-friendly application. Neither programming skills nor in-depth knowledge of search engine optimization are required. Gambio also offers users a customised layout for their shop and an easy-to-use user interface.
+
+Coinsnap has developed a free module so that Bitcoin and Lightning payments can also be conveniently processed via the Gambio shop software. This payment plugin is directly adapted to Gambio and enables the convenient processing of Bitcoin payments.
+
+With the Coinsnap Bitcoin Lightning payment processing plugin you can immediately accept Bitcoin Lightning payments on your site. You don’t need your own Lightning node or any other technical requirements if you'd like to provide payments via Coinsnap payment gateway. Coinsnap Bitcoin and Lightning payment requires no minimum costs, no fixed contracts, no hidden costs. The Gambio payment plugin from Coinsnap can be downloaded and installed free of charge.
+
+Simply register on [Coinsnap](https://app.coinsnap.io/register), enter your own Lightning address, upload and install the Coinsnap payment module in Gambio Shop backend. Add your store ID and your API key which you’ll find in your Coinsnap account, and your customers can pay you with Bitcoin Lightning right away!
 
 ## Features ##
 
