@@ -21,9 +21,9 @@ Gambio is a German shop system that offers a complete solution for online retail
 
 Gambio was founded in 2005 and is used by more than 25,000 e-commerce merchants, primarily in Germany, Austria and Switzerland. System combines everything you need to successfully sell online: A modern, visually appealing shop-system with a large range of functions that is connected to all important marketplaces and payment systems as well as technically optimized for great search engine rankings.
 
-* Coinsnap Gambio Demo Site: https://gambio.coinsnap.net/
-* Blog Article: https://coinsnap.io/coinsnap-for-gambio-payment-plugin/
-* GitHub: https://github.com/Coinsnap/Coinsnap-for-Gambio
+* Coinsnap Gambio Demo Site: [https://gambio.coinsnap.net/](https://gambio.coinsnap.net/)
+* Blog Article: [https://coinsnap.io/coinsnap-for-gambio-payment-plugin/](https://coinsnap.io/coinsnap-for-gambio-payment-plugin/)
+* GitHub: [https://github.com/Coinsnap/Coinsnap-for-Gambio](https://github.com/Coinsnap/Coinsnap-for-Gambio)
 
 ## Bitcoin and Lightning payments in Gambio ##
 
