@@ -78,24 +78,142 @@
 	<div class="form-horizontal">
             <fieldset>
                 <legend>{$txt.configuration}</legend>
-		<div class="form-group">
+                
+                
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_provider}</label>
+                    <div class="col-sm-7">
+                        <select class="form-control" name="configuration[provider]" id="provider" required="required">
+                            <option value="coinsnap" {if $content.configuration['provider'] == 'coinsnap'}selected{/if}>Coinsnap</option>
+                            <option value="btcpay" {if $content.configuration['provider'] == 'btcpay'}selected{/if}>BTCPay server</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-1">
+			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_provider_msg}</span>
+                    </div>
+		</div>
+                
+		<div class="form-group coinsnap">
                     <label class="col-sm-4 control-label">{$txt.coinsnap_storeid}</label>
                     <div class="col-sm-7">
 			<input type="text" class="form-control" name="configuration[storeid]" id="storeid" value="{$content.configuration['storeid']}" required="required" />
                     </div>
                     <div class="col-sm-1">
-			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$html.coinsnap_storeid_msg}</span>
+			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_storeid_msg}</span>
                     </div>
 		</div>
-		<div class="form-group">
+		<div class="form-group coinsnap">
                     <label class="col-sm-4 control-label">{$txt.coinsnap_apikey}</label>
                     <div class="col-sm-7">
-                        <input type="password" class="form-control" name="configuration[apikey]" id="apikey" value="{$content.configuration['apikey']}" required="required" />
+                        <input type="text" class="form-control" name="configuration[apikey]" id="apikey" value="{$content.configuration['apikey']}" required="required" />
                     </div>
                     <div class="col-sm-1">
                         <span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_apikey_msg}</span>
                     </div>
 		</div>
+                
+                
+                <div class="form-group btcpay">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_btcpay_serverurl}</label>
+                    <div class="col-sm-7">
+			<input type="text" class="form-control" name="configuration[btcpay_serverurl]" id="btcpay_serverurl" value="{$content.configuration['btcpay_serverurl']}" required="required" />
+                    </div>
+                    <div class="col-sm-1">
+			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_btcpay_serverurl_msg}</span>
+                    </div>
+		</div>
+		<div class="form-group btcpay">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_btcpay_storeid}</label>
+                    <div class="col-sm-7">
+			<input type="text" class="form-control" name="configuration[btcpay_storeid]" id="btcpay_storeid" value="{$content.configuration['btcpay_storeid']}" required="required" />
+                    </div>
+                    <div class="col-sm-1">
+			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_btcpay_storeid_msg}</span>
+                    </div>
+		</div>
+		<div class="form-group btcpay">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_btcpay_apikey}</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" name="configuration[btcpay_apikey]" id="btcpay_apikey" value="{$content.configuration['btcpay_apikey']}" required="required" />
+                    </div>
+                    <div class="col-sm-1">
+                        <span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_btcpay_apikey_msg}</span>
+                    </div>
+		</div>
+                
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_autoredirect}</label>
+                    <div class="col-sm-7">
+			<input type="checkbox" {if $content.configuration['autoredirect'] == 1}checked{/if} class="form-control" name="configuration[autoredirect]" id="autoredirect" value="1" />
+                    </div>
+                    <div class="col-sm-1">
+			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_autoredirect_msg}</span>
+                    </div>
+		</div>
+                
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_returnurl}</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" name="configuration[returnurl]" id="btcpay_apikey" value="{$content.configuration['returnurl']}" />
+                    </div>
+                    <div class="col-sm-1">
+                        <span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_returnurl_msg}</span>
+                    </div>
+		</div>
+                
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_discount_enabled}</label>
+                    <div class="col-sm-7">
+			<input type="checkbox" {if $content.configuration['discount_enabled'] == 1}checked{/if} class="form-control" name="configuration[discount_enabled]" id="discount_enabled" value="1" />
+                    </div>
+                    <div class="col-sm-1">
+			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_discount_enabled_msg}</span>
+                    </div>
+		</div>
+                
+                <div class="form-group discount">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_discount_type}</label>
+                    <div class="col-sm-7">
+                        <select class="form-control" name="configuration[discount_type]" id="discount_type">
+                            <option value="fixed" {if $content.configuration['discount_type'] == 'fixed'}selected{/if}>{$txt.coinsnap_discount_type_fixed}</option>
+                            <option value="percentage" {if $content.configuration['discount_type'] == 'percentage'}selected{/if}>{$txt.coinsnap_discount_type_percentage}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-1">
+			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_discount_type_msg}</span>
+                    </div>
+		</div>
+                
+                <div class="form-group discount discount-amount">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_discount_amount}</label>
+                    <div class="col-sm-7">
+                        <input type="number" min="0" step="0.01" class="form-control" name="configuration[discount_amount]" id="discount_amount" value="{$content.configuration['discount_amount']}" />
+                    </div>
+                    <div class="col-sm-1">
+                        <span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_discount_amount_msg}</span>
+                    </div>
+		</div>
+                
+                <div class="form-group discount discount-amount">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_discount_amount_limit}</label>
+                    <div class="col-sm-7">
+                        <input type="number" min="0" step="0.01" max="100" class="form-control" name="configuration[discount_amount_limit]" id="discount_amount_limit" value="{$content.configuration['discount_amount_limit']}" />
+                    </div>
+                    <div class="col-sm-1">
+                        <span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_discount_amount_limit_msg}</span>
+                    </div>
+		</div>
+                
+                <div class="form-group discount discount-percentage">
+                    <label class="col-sm-4 control-label">{$txt.coinsnap_discount_percentage}</label>
+                    <div class="col-sm-7">
+                        <input type="number" min="0" step="0.01" max="100" class="form-control" name="configuration[discount_percentage]" id="discount_percentage" value="{$content.configuration['discount_percentage']}" />
+                    </div>
+                    <div class="col-sm-1">
+                        <span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_discount_percentage_msg}</span>
+                    </div>
+		</div>
+                
             </fieldset>
 	</div>
 		
@@ -106,4 +224,8 @@
         </div>
     </form>
 </div>
+
+<script src="../JSEngine/build/vendor/jquery/jquery.min.js"></script>
+<script src="/GXModules/Coinsnap/CoinsnapPayment/Admin/Javascripts/coinsnap_configuration_panel.js"></script>
 {/block}
+

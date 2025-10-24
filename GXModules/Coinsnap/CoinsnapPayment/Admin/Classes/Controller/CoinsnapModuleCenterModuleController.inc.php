@@ -15,7 +15,7 @@ use Coinsnap\Client\WebhookCreated;
 use Coinsnap\Result\AbstractStorePaymentMethodResult;
 use Coinsnap\Result\ServerInfo;
 
-define( 'COINSNAP_VERSION', '1.0' );
+define( 'COINSNAP_VERSION', '1.1.0' );
 define( 'COINSNAP_SERVER_URL', 'https://app.coinsnap.io' );
 define( 'COINSNAP_API_PATH', '/api/v1/' );
 define( 'COINSNAP_SERVER_PATH', 'stores' );
@@ -41,7 +41,7 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
 	 */
     public function actionDefault(): AdminLayoutHttpControllerResponse {
         $title = new NonEmptyStringType('Coinsnap ' . $this->languageTextManager->get_text('payment', 'coinsnap'));
-	$template = $this->getTemplateFile('Coinsnap/CoinsnapPayment/Admin/Html/coinsnap_configuration.html');
+	$template = $this->getTemplateFile('Coinsnap/CoinsnapPayment/Admin/Templates/coinsnap_configuration.html');
 
 	$data = MainFactory::create('KeyValueCollection',
             ['pageToken' => $_SESSION['coo_page_token']->generate_token(),

@@ -2,10 +2,42 @@
 
 $t_language_text_section_content_array = [
     
+    'coinsnap_provider'                => 'Anbieter',
+    'coinsnap_provider_msg'            => 'Anbieter auswählen: Coinsnap oder BTCPay Server',
+    
     'coinsnap_storeid'                 => 'Store ID',
     'coinsnap_apikey'                  => 'API-Schlüssel',
     'coinsnap_storeid_msg'             => 'Den Store ID finden Sie in Ihrem Coinsnap App (https://app.coinsnap.io)',
-    'coinsnap_apikey_msg'              => 'Den API-Schlüssel finden Sie in Ihrem Coinsnap App (https://app.coinsnap.io)',
+    'coinsnap_apikey_msg'              => 'Den API-Schlüssel finden Sie in Ihrem Coinsnap App (https://app.coinsnap.io)',   
+    
+    'coinsnap_btcpay_serverurl'        => 'BTCPay server URL',
+    'coinsnap_btcpay_serverurl_msg'    => 'URL Ihres BTCPay-Servers',
+    'coinsnap_btcpay_storeid'          => 'BTCPay Store ID',
+    'coinsnap_btcpay_storeid_msg'      => 'Sie finden Ihre Store ID in Ihrem BTCPay Server.',
+    'coinsnap_btcpay_apikey'           => 'API-Schlüssel',
+    'coinsnap_btcpay_apikey_msg'       => 'Sie können einen API-Schlüssel in Ihrem BTCPay Server generieren.',
+    
+    'coinsnap_autoredirect'            => 'Weiterleitung nach Zahlung',
+    'coinsnap_autoredirect_msg'        => 'Nach der Zahlung automatisch zur Dankesseite weiterleiten',
+    
+    'coinsnap_returnurl'               => 'Rückgabe-URL nach Zahlung',
+    'coinsnap_returnurl_msg'           => 'Benutzerdefinierte Rückgabe-URL nach erfolgreicher Zahlung (Standard URL, wenn leer)',
+    
+    'coinsnap_discount_enabled'         => 'Rabatt aktiviert',
+    
+    'coinsnap_discount_type'            => 'Rabattart',
+    'coinsnap_discount_type_fixed'      => 'Behoben',
+    'coinsnap_discount_type_percentage' => 'Prozent',
+    'coinsnap_discount_type_msg'        => 'Wählen Sie die Art des Rabatts: Betrag oder Prozent',
+    
+    'coinsnap_discount_amount'          => 'Rabattbetrag',
+    'coinsnap_discount_amount_msg'      => 'Rabattbetrag',
+    
+    'coinsnap_discount_amount_limit'    => 'Maximaler Rabattbetrag, %',
+    'coinsnap_discount_amount_limit_msg'=> 'Maximaler Rabattbetrag für festen Rabatt, %',
+    
+    'coinsnap_discount_percentage'      => 'Rabattbetrag, %',
+    'coinsnap_discount_percentage_msg'  => 'Rabattbetrag in Prozent (%)',
     
     'coinsnap_connect_success'         => 'Eine Verbindung wurde erfolgreich hergestellt',
     'coinsnap_connect_failure'         => 'Es kann keine Verbindung zum Coinsnap-Server hergestellt werden.',
