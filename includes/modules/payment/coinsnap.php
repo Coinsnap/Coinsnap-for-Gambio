@@ -7,15 +7,19 @@ if (file_exists(dirname(__DIR__) . '/../../../GXModules/Coinsnap/CoinsnapPayment
     require_once dirname(__DIR__) . '/../../../GXModules/Coinsnap/CoinsnapPayment/loader.php';
 }
 
-define( 'COINSNAP_VERSION', '1.0' );
-define( 'COINSNAP_SERVER_URL', 'https://app.coinsnap.io' );
-define( 'COINSNAP_API_PATH', '/api/v1/' );
-define( 'COINSNAP_SERVER_PATH', 'stores' );
-define( 'COINSNAP_REFERRAL_CODE', 'D17689' );
+if(!defined('COINSNAP_GAMBIO_VERSION')){ define( 'COINSNAP_GAMBIO_VERSION', '1.1.0' ); }
+if(!defined('COINSNAP_SERVER_URL')){ define( 'COINSNAP_SERVER_URL', 'https://app.coinsnap.io' ); }
+if(!defined('COINSNAP_CURRENCIES')){ define( 'COINSNAP_CURRENCIES', array("EUR","USD","SATS","BTC","CAD","JPY","GBP","CHF","RUB") ); }
+if(!defined('COINSNAP_API_PATH')){ define( 'COINSNAP_API_PATH', '/api/v1/' ); }
+if(!defined('COINSNAP_SERVER_PATH')){ define( 'COINSNAP_SERVER_PATH', 'stores' ); }
+if(!defined('COINSNAP_REFERRAL_CODE')){ define( 'COINSNAP_REFERRAL_CODE', 'D17689' ); }
+if(!defined('COINSNAP_ICON_URL')){ define( 'COINSNAP_ICON_URL', '/images/icons/payment/coinsnap_bitcoin_lightning.png' ); }
 	
 class coinsnap {
 		
     protected $languageTextManager; //var LanguageTextManager
+    protected $configuration;
+    var $code, $output;
 		
     public function __construct(){
         global $order;
@@ -24,7 +28,7 @@ class coinsnap {
         $this->_initLanguageConstants();
 			
         $this->title = 'Bitcoin + Lightning';
-        $this->title = '<img src="/images/icons/payment/coinsnap_bitcoin_lightning.png" alt="'.$this->code.'">' . $this->title;
+        $this->title = '<img src="'.COINSNAP_ICON_URL.'" alt="'.$this->code.'">' . $this->title;
         
         $this->description = 'Coinsnap ' . $this->languageTextManager->get_text('description', 'coinsnap');
 			
@@ -88,7 +92,7 @@ class coinsnap {
 	}
 	return false;
     }
-		
+    
     public function check(){
         if (!isset ($this->_check)) {
             $check_query = xtc_db_query("select `value` from " . TABLE_CONFIGURATION . " where `key` = 'configuration/MODULE_PAYMENT_" . strtoupper($this->code) . "_STATUS'");
@@ -101,9 +105,6 @@ class coinsnap {
 	$config = $this->_configuration();
         $sort_order = 0;
 	foreach ($config as $key => $data) {
-            
-            echo "Install: configuration/MODULE_PAYMENT_" . strtoupper($this->code) . "_" . $key;
-            
             $install_query = "insert into `gx_configurations` (`key`, `value`, `sort_order`, `type`, `last_modified`) values ('configuration/MODULE_PAYMENT_" . 
             strtoupper($this->code) . "_" . $key . "', '". $data['value'] . "', '" . $sort_order . "', '" . addslashes($data['type'] ?? ''). "', now())";
             xtc_db_query($install_query);
@@ -124,13 +125,6 @@ class coinsnap {
 		
     public function _configuration(){
         $config = ['STATUS' => ['value' => 'True', 'type' => 'switcher'],'SORT_ORDER' => ['value' => '0']];
-        /*  Creating checkbox for each payment method - for the future. Now we have Bitcoin+Lightning only
-	foreach ($this->getPaymentMethods() as $method) {
-            $title = (!empty($method['titles'][$_SESSION['language']]))? $method['titles'][$_SESSION['language']] : $title = $method['titles']['english'];
-            define('MODULE_PAYMENT_COINSNAP_' . strtoupper($method['id']) . '_TITLE', $title);
-            define('MODULE_PAYMENT_COINSNAP_' . strtoupper($method['id']) . '_DESC', $this->languageTextManager->get_text('would_you_like_to_enable_this_payment_method', 'coinsnap'));
-            $config[strtoupper($method['id'])] = ['value' => 'True', 'type' => 'switcher'];
-	}*/
 	return $config;
     }
 		
@@ -190,7 +184,6 @@ class coinsnap {
 		
     protected function getPaymentMethods(){
         $configuration = \MainFactory::create('CoinsnapStorage');
-        $coinsnap_storage_array = $configuration->get_all();
         $paymentMethods = json_decode($configuration->get('payment_methods'), true);
 	return $paymentMethods;
     }

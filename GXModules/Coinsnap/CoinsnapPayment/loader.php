@@ -5,7 +5,7 @@ spl_autoload_register(
         $libName = 'Coinsnap';
         $gxName = 'GXModules';
         
-        if(strpos($className, $libName) !== 0 && strpos($className, $gxName) !== 0) {
+	if(strpos($className, $libName) !== 0 && strpos($className, $gxName) !== 0) {
             return;
         }
 

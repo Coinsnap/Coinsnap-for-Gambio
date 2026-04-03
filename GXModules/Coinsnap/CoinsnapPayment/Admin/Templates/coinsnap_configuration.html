@@ -144,7 +144,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{$txt.coinsnap_autoredirect}</label>
                     <div class="col-sm-7">
-			<input type="checkbox" {if $content.configuration['autoredirect'] == 1}checked{/if} class="form-control" name="configuration[autoredirect]" id="autoredirect" value="1" />
+			<input type="checkbox" name="configuration[autoredirect]" id="autoredirect" value="1" {if $content.configuration['autoredirect'] == 1}checked{/if} />
                     </div>
                     <div class="col-sm-1">
 			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_autoredirect_msg}</span>
@@ -164,7 +164,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{$txt.coinsnap_discount_enabled}</label>
                     <div class="col-sm-7">
-			<input type="checkbox" {if $content.configuration['discount_enabled'] == 1}checked{/if} class="form-control" name="configuration[discount_enabled]" id="discount_enabled" value="1" />
+			<input type="checkbox" name="configuration[discount_enabled]" id="discount_enabled" value="1" {if $content.configuration['discount_enabled'] == 1}checked{/if} />
                     </div>
                     <div class="col-sm-1">
 			<span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_discount_enabled_msg}</span>

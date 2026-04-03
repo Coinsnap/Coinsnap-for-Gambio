@@ -1,5 +1,8 @@
 <?php
 class Coinsnap_CheckoutSuccessContentControl extends Coinsnap_CheckoutSuccessContentControl_parent {
+    
+    public $order_id;
+    
     public function proceed(){
         if (strpos($_SESSION['payment'] ?? '', 'coinsnap') !== false) {
             $this->reset();

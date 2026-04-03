@@ -50,6 +50,18 @@ $t_language_text_section_content_array = [
     'coinsnap_webhook_registered'      => 'Enregistrement réussi d\'un nouveau webhook sur Coinsnap Server',
     'coinsnap_webhook_error'           => 'Impossible d\'enregistrer un nouveau webhook sur la boutique',
     
+    'text_order_amount'                 => 'Le montant minimum de commande est de',
+    'error_connection'                  => 'La connexion à l\'API n\'est pas établie',
+    'error_no_payment_method'           => 'Aucun moyen de paiement n\'est configuré',
+    
+    'currency is not supported'         => 'Cette devise n\'est pas prise en charge par Coinsnap',
+    'invoice amount_error'              => 'Le montant de la facture ne peut être inférieur à',
+    'invoice request error'             => 'Erreur lors de la demande de facture',
+    
+    'coinsnap_discount_title'           => 'Réduction Bitcoin chez Coinsnap',
+    'coinsnap_discount_description'     => 'Réduction pour les paiements en Bitcoin via Coinsnap + Lightning',
+    'coinsnap_discount_output'          => 'Réduction Bitcoin',
+    
 	'payment' => 'Paiement',
 	'description' => 'Mode de paiement',
 	'general' => 'Général',

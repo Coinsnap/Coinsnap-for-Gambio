@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+if (!defined('COINSNAP_SERVER_PATH')){
+            define( 'COINSNAP_SERVER_PATH', 'stores' );  
+        }
+        
+
 use GXModules\Library\Core\{
 	Api\WebHooks\Service\WebhooksService,
 	Api\WebHooks\Struct\WebHookRequest,
@@ -14,6 +19,7 @@ use GXModules\Shop\Classes\Model\CoinsnapTransactionModel;
 
 class CoinsnapWebhookController extends HttpViewController {
 	
+    public $configuration;   //  @var $configuration
     protected $webHooksService; //  @var WebhooksService $webHooksService
     public $settings;           //  @var Settings $settings
 
@@ -30,78 +36,142 @@ class CoinsnapWebhookController extends HttpViewController {
         
     } */
     
-    //  Check webhook signature to be a valid request.
-    public function validWebhookRequest(string $signature, string $requestData): bool {
+    public function getProvider() {
+        
+        return ($this->configuration->get('provider') === 'btcpay') ? 'btcpay' : 'coinsnap';
+    }        
             
-        if ($configuration === null) {
-            $configuration = \MainFactory::create('CoinsnapStorage');
-        }
-        
-        if ($secret = $configuration -> get('webhook_secret')) {
-            return Webhook::isIncomingWebhookRequestValid($requestData, $signature, $secret);
-        }
-        
-        return false;
+    public function getApiUrl() {
+        return ($this->getProvider() === 'btcpay')? $this->configuration->get('btcpay_serverurl') : 'https://app.coinsnap.io';
+    }	
+
+    public function getStoreId() {
+        return ($this->getProvider() === 'btcpay')? $this->configuration->get('btcpay_storeid') : $this->configuration->get('storeid');
+    }	
+    
+    public function getApiKey() {
+        return ($this->getProvider() === 'btcpay')? $this->configuration->get('btcpay_apikey') : $this->configuration->get('apikey');
     }
 
     public function actionIndex(){
         
-        if($body = file_get_contents('php://input')){
+        if ($this->configuration === null) {
+            $this->configuration = \MainFactory::create('CoinsnapStorage');
+        }
+        
+        // First check if we have any input
+        $rawPostData = file_get_contents('php://input');        
+        
+        if (!$rawPostData) {
+            http_response_code(400);
+            die('No raw post data received');
+        } else {
+            $this->save_log_record('info','Coinsnap Webhook Payload',$rawPostData);
+        }
+        
+        $signature = null;
+        $payloadKey = null;
+        $_provider = ($this -> getProvider() === 'btcpay') ? 'btcpay' : 'coinsnap';
+        
+        // Get headers and check for signature
+        
+        $headers = getallheaders();
+        
+        $insertData = [
+            'header' => json_encode($headers),
+            'body' => $rawPostData,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
             
-            
-            //  Validate webhook request.
-            //  X-Coinsnap-Sig type: string
-            //  HMAC signature of the body using the webhook's secret
-            $headers = getallheaders();             
-            
-            $insertData = [
-                'header' => json_encode($headers),
-                'body' => $body,
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            
-            xtc_db_perform('coinsnap_callback', $insertData, 'insert');
-            
-                foreach ($headers as $key => $value) {
-				if (strtolower($key) === 'x-coinsnap-sig') {
-					$signature = $value;
-				}
-			}
-            
-            $data = json_decode($body, false, 512, JSON_THROW_ON_ERROR);
-            if (isset($signature) && $this->validWebhookRequest($signature, $body)) {
+        xtc_db_perform('coinsnap_callback', $insertData, 'insert');
+        
+        foreach ($headers as $key => $value) {
+            if (strtolower($key) === 'x-coinsnap-sig' || strtolower($key) === 'btcpay-sig') {
+                $signature = $value;
+                $payloadKey = strtolower($key);
+            }
+        }
+
+        // Handle missing or invalid signature
+        if (!isset($signature)) {
+            http_response_code(401);
+            die('Authentication required');
+        }
+
+        // Validate the signature
+        $webhook = json_decode($this->configuration->get('webhook'),true);
+        
+        if (!Webhook::isIncomingWebhookRequestValid($rawPostData, $signature, $webhook['secret'])) {
+            $this->save_log_record('error','Invalid authentication signature',['payloadKey' => $payloadKey]);
+            http_response_code(401);
+            die('Invalid authentication signature for '.$payloadKey);
+        }
+        
+        try {
+
+            // Parse the JSON payload
+            $postData = json_decode($rawPostData, false, 512, JSON_THROW_ON_ERROR);
+
+            if (!isset($postData->invoiceId)) {
+                http_response_code(400);
+                die('No Coinsnap invoiceId provided');
+            }
+
+            if (strpos($postData->invoiceId, 'test_') !== false) {
+                http_response_code(200);
+                die('Successful webhook test');
+            }
+
+            $invoice_id = $postData->invoiceId;
+
+            try {
+                $client = new \Coinsnap\Client\Invoice($this->getApiUrl(), $this->getApiKey());
+                $csinvoice = $client->getInvoice($this->getStoreId(), $invoice_id);
                 
-                if (isset($data->invoiceId)) {
-                    
-                    $transactionModel = new CoinsnapTransactionModel();
-                    
-                    if($transaction = $transactionModel -> getFromDbByTransactionId($data->invoiceId)){
-                        $orderId = (int)$transaction['order_id'];
-                        $webhookType = $data->type;
-                        $this->updateTransaction($orderId,$webhookType);
-                    }
-                    else {
-                        die('No transaction found for this invoiceId.');
-                    }
+                $status = $csinvoice->getData()['status'];
+                $order_id = ($_provider === 'btcpay') ? $csinvoice->getData()['metadata']['orderId'] : $csinvoice->getData()['orderId'];
+                $this->save_log_record('info','Coinsnap Webhook Payload',['Order Id' => $order_id,'Status' => $status]);
+                $transactionModel = new CoinsnapTransactionModel();
+                   
+                if($transaction = $transactionModel -> getFromDbByTransactionId($invoice_id)){
+                    $orderId = (int)$transaction['order_id'];
+                    $this->updateTransaction($orderId,$status);
                 }
                 else {
-                    die('No Coinsnap invoiceId provided, aborting.');
-                }	
-            }
-            else {
-                die('Webhook request validation failed.');
-            }
-            
-            exit();
-        }
-    }	
+                    $this->save_log_record('error','No transaction found for invoiceId',['Invoice Id' => $invoice_id]);
+                    die('No transaction found for this invoiceId.');
+                }
 
+                echo "OK";
+                exit;
+            } catch (JsonException $e) {
+                $this->save_log_record('error','Coinsnap Webhook Payload Error',['message' => $e->getMessage()]);
+                http_response_code(400);
+                die('Invalid JSON payload');
+            }
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            die('Internal server error');
+        }
+        exit();
+    }
+    
+    //  string $mode: error | info | debug | warning
+    public function save_log_record($mode,$title,$message){
+        //$languageTextManager = MainFactory::create_object(LanguageTextManager::class, array(), true);        
+        //$logger = \Gambio\Core\Application::getInstance()->getLogger();
+        //$logger->$mode($title, $message);
+    }
+
+    
+    
     /**
 	 * @param int $orderId
 	 * @param string $webhookType
 	 * @throws Exception
      */
     private function updateTransaction(int $orderId, string $webhookType): void {
+        
         switch ($webhookType){
             case TransactionState::NEW:
                 $this->updateOrderAndTransactionStatus(TransactionState::NEW, $orderId);
