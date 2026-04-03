@@ -2,21 +2,65 @@
 
 $t_language_text_section_content_array = [
     
+    'coinsnap_provider'                => 'Provider',
+    'coinsnap_provider_msg'            => 'Choose provider: Coinsnap or BTCPay Server',
+    
     'coinsnap_storeid'                 => 'Clé Store ID',
     'coinsnap_apikey'                  => 'Clé API key',
     'coinsnap_storeid_msg'             => 'Vous trouverez votre clé Store ID dans votre <a href="https://app.coinsnap.io" target="_blank">Coinsnap App</a>',
     'coinsnap_apikey_msg'              => 'Vous trouverez votre clé API key dans votre <a href="https://app.coinsnap.io" target="_blank">Coinsnap App</a>',
     
+    'coinsnap_btcpay_serverurl'        => 'BTCPay server URL',
+    'coinsnap_btcpay_serverurl_msg'    => 'URL of your BTCPay server',
+    'coinsnap_btcpay_storeid'          => 'BTCPay Store ID',
+    'coinsnap_btcpay_storeid_msg'      => 'You can find your Store ID in your BTCPay Server',
+    'coinsnap_btcpay_apikey'           => 'Coinsnap API key',
+    'coinsnap_btcpay_apikey_msg'       => 'You can generate API key in your BTCPay Server',
+    
+    'coinsnap_autoredirect'            => 'Redirect after payment',
+    'coinsnap_autoredirect_msg'        => 'Redirect to Thank You page after payment automatically',
+    
+    'coinsnap_returnurl'               => 'Return URL after payment',
+    'coinsnap_returnurl_msg'           => 'Custom return URL after successful payment (default URL if blank)',
+    
+    'coinsnap_discount_enabled'         => 'Discount enabled',
+    
+    'coinsnap_discount_type'            => 'Discount type',
+    'coinsnap_discount_type_fixed'      => 'Fixed',
+    'coinsnap_discount_type_percentage' => 'Percentage',
+    'coinsnap_discount_type_msg'        => 'Choose discount type: amount or percents',
+    
+    'coinsnap_discount_amount'          => 'Discount amount',
+    'coinsnap_discount_amount_msg'      => 'Discount amount',
+    
+    'coinsnap_discount_amount_limit'    => 'Max discount amount, %',
+    'coinsnap_discount_amount_limit_msg'=> 'Max discount amount for fixed discount, %',
+    
+    'coinsnap_discount_percentage'      => 'Discount amount, %',
+    'coinsnap_discount_percentage_msg'  => 'Discount amount in percents (%)',
+    
     'coinsnap_connect_success'         => 'Une connexion a été établie avec succès',
     'coinsnap_connect_failure'         => 'Impossible d\'établir une connexion avec Coinsnap Server',
     'coinsnap_storeid_missing'         => 'Veuillez donner Store ID',
     'coinsnap_apikey_missing'          => 'Veuillez donner API key',
-    'coinsnap_configuration_failure'   => 'Une erreur lors de la sauvegarde de la configuration',
+    'coinsnap_configuration_failure'   => 'Une erreur lors de la sauvegarde de la configuration',     
     'coinsnap_connect'                 => 'Connecter',
     
     'coinsnap_webhook_exists'          => 'Le webhook existe déjà, ignorer la création du webhook',
     'coinsnap_webhook_registered'      => 'Enregistrement réussi d\'un nouveau webhook sur Coinsnap Server',
     'coinsnap_webhook_error'           => 'Impossible d\'enregistrer un nouveau webhook sur la boutique',
+    
+    'text_order_amount'                 => 'Le montant minimum de commande est de',
+    'error_connection'                  => 'La connexion à l\'API n\'est pas établie',
+    'error_no_payment_method'           => 'Aucun moyen de paiement n\'est configuré',
+    
+    'currency is not supported'         => 'Cette devise n\'est pas prise en charge par Coinsnap',
+    'invoice amount_error'              => 'Le montant de la facture ne peut être inférieur à',
+    'invoice request error'             => 'Erreur lors de la demande de facture',
+    
+    'coinsnap_discount_title'           => 'Réduction Bitcoin chez Coinsnap',
+    'coinsnap_discount_description'     => 'Réduction pour les paiements en Bitcoin via Coinsnap + Lightning',
+    'coinsnap_discount_output'          => 'Réduction Bitcoin',
     
 	'payment' => 'Paiement',
 	'description' => 'Mode de paiement',

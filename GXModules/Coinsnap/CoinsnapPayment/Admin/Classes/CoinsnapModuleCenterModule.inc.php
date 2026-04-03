@@ -14,7 +14,7 @@ class CoinsnapModuleCenterModule extends AbstractModuleCenterModule {
     public $settings; //@var Settings
     public $configuration; //@var CoinsnapStorage
     public $languageTextManager;
-
+    
     protected function _init(): void {
         //$this->paymentService = new PaymentService();
         $this->name = 'Coinsnap';

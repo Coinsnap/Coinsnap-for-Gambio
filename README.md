@@ -7,7 +7,7 @@
 * Tags: Lightning, Lightning Payment, SATS, Satoshi sats, bitcoin, gambio, accept bitcoin, bitcoin plugin, bitcoin payment processor, bitcoin e-commerce, Lightning Network, cryptocurrency, lightning payment processor
 * Requires PHP: 8.0
 * Requires Gambio: GX 4.5.x - 4.8.x
-* Stable tag: 1.0.0
+* Stable tag: 1.1.0
 * License: GPL2
 * License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -228,5 +228,10 @@ Read more about the integration configuration on [our Wiki](https://github.com/C
 
 # Changelog
 
-= 1.0.0 :: 2023-11-30 =
+### 1.0.0 :: 2023-11-30
 * Initial release.
+
+### 1.1.0 :: 2026-04-03
+* Update: Added BTCPay Server payment gateway.
+* Update: Added Bitcoin discount option in plugin Settings (fixed amount or percentage).
+* Fixed warnings in Gambio log

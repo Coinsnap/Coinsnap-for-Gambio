@@ -4,21 +4,21 @@ require_once DIR_FS_CATALOG . 'inc/get_transfer_charge_text.inc.php'; // Require
 
 class CoinsnapCheckoutConfirmationThemeContentView extends CoinsnapCheckoutConfirmationThemeContentView_parent
 {
-	public function prepare_data()
-	{
-		if (strpos($_SESSION['payment'], 'coinsnap') !== false) {
-			$this->coo_order->info['payment_method'] = '';
-		}
-		parent::prepare_data();
+    public function prepare_data(){
+
+        if (strpos($_SESSION['payment'], 'coinsnap') !== false) {
+            $this->coo_order->info['payment_method'] = '';
+        }
+	parent::prepare_data();
 		
 		$configurationStorage = MainFactory::create('CoinsnapStorage');
 		$paymentMethodsArray = \json_decode($configurationStorage->get('payment_methods'), true);
 		
-		if ($paymentMethodsArray && \is_array($paymentMethodsArray)) {
+                if ($paymentMethodsArray && \is_array($paymentMethodsArray)) {
 			$currentPaymentMethod = \array_filter($paymentMethodsArray, function ($paymentMethod) {
 				return ($paymentMethod['id'] == $_SESSION['payment']);
 			});
-			
+                        
 			$this->content_array['PAYMENT_METHOD'] = $currentPaymentMethod[0]['titles'][$_SESSION['language']];
 		}
 		

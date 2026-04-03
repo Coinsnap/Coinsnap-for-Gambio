@@ -18,15 +18,15 @@ class Coinsnap_CheckoutPaymentContentControl extends Coinsnap_CheckoutPaymentCon
     private function getErrorMessage(){
         $transactionId = $_SESSION['transactionID'] ?? null;
 
-	if (!isset($_GET['payment_error']) || empty($transactionId)) {
+	if (filter_input(INPUT_GET,'payment_error',FILTER_SANITIZE_FULL_SPECIAL_CHARS) !== null || empty($transactionId)) {
             return '';
 	}
 
 	$settings = new Settings();
 	    $transaction = $settings->getApiClient()->getTransactionService()->read($settings->getSpaceId(), $_SESSION['transactionID']);
 	    $languageTextManager = MainFactory::create_object(LanguageTextManager::class, array(), true);
-	    if (!empty($_GET['payment_error'])) {
-	        return $languageTextManager->get_text($_GET['payment_error'], 'coinsnap');
+	    if (!empty(filter_input(INPUT_GET,'payment_error',FILTER_SANITIZE_FULL_SPECIAL_CHARS))) {
+	        return $languageTextManager->get_text(filter_input(INPUT_GET,'payment_error',FILTER_SANITIZE_FULL_SPECIAL_CHARS), 'coinsnap');
 	    }
 
 	return $transaction->getUserFailureMessage();
