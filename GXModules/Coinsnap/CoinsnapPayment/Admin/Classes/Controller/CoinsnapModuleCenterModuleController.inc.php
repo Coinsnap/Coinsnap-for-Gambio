@@ -45,7 +45,7 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
 
 	$data = MainFactory::create('KeyValueCollection',
             ['pageToken' => $_SESSION['coo_page_token']->generate_token(),
-            'configuration' => $this->configuration->get_all(),
+            'configuration' => $this->configurationForView(),
             'translate_section' => 'coinsnap',
             'action_save_configuration' => xtc_href_link('admin.php', 'do=CoinsnapModuleCenterModule/SaveConfiguration'),
 	]);
@@ -60,9 +60,9 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
     public function actionSaveConfiguration(): RedirectHttpControllerResponse {
         $this->_validatePageToken();
 
-        $newConfiguration = $this->_getPostData('configuration');
+        $newConfiguration = $this->keepStoredApiKeys((array) $this->_getPostData('configuration'));
         $oldConfiguration = $this->configuration->get_all();
-        
+
         //  We save new configuration 
         foreach ($newConfiguration as $key => $value) {
             try {
@@ -94,7 +94,14 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
             
             if ($this_store) {
                 
-                if (! $this->webhookExists($apiUrl, $apiKey, $storeId)){
+                try {
+                    $webhookExists = $this->webhookExists($apiUrl, $apiKey, $storeId);
+                } catch (\Throwable $e) {
+                    // An API error is not "no webhook": registering now would replace a working secret.
+                    $webhookExists = true;
+                    $GLOBALS['messageStack']->add_session($this->languageTextManager->get_text('coinsnap_webhook_error','coinsnap'),'error');
+                }
+                if (! $webhookExists){
                     if (! $this->registerWebhook($apiUrl, $apiKey, $storeId, $provider)) {
                         $GLOBALS['messageStack']->add_session($this->languageTextManager->get_text('coinsnap_webhook_error','coinsnap'),'error');                           			}
                     else {
@@ -204,27 +211,26 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
                 
             if ($storedWebhook && is_array($storedWebhook)) {
 
+                // Throws when the API can't be asked; the caller must not treat that as "no webhook".
                 try {
                     $existingWebhook = $whClient->getWebhook($storeId, $storedWebhook['id']);
-
                     if ($existingWebhook->getData()['id'] === $storedWebhook['id'] && strpos($existingWebhook->getData()['url'], $storedWebhook['url']) !== false) {
                         return true;
                     }
-                } catch (\Throwable $e){
-                    $errorMessage = 'Error fetching existing Webhook (' .$e->getMessage().')';
-                    return false;
-                }
-            }
-            try {
-                $storeWebhooks = $whClient->getWebhooks($storeId);
-                foreach ($storeWebhooks as $webhook) {
-                    if (strpos($webhook->getData()['url'], $this->getWebhookUrl()) !== false) {
-                        $whClient->deleteWebhook($storeId, $webhook->getData()['id']);
+                } catch (\Coinsnap\Exception\RequestException $e) {
+                    if (!in_array($e->getCode(), [400, 404], true)) {
+                        throw $e;
                     }
                 }
-            } catch (\Throwable $e) {
-                $errorMessage = 'Error fetching webhooks for store ID '.$storeId.'. (' .$e->getMessage().')';
-                return false;
+            }
+            foreach ($whClient->getWebhooks($storeId) as $webhook) {
+                if (strpos($webhook->getData()['url'], $this->getWebhookUrl()) !== false) {
+                    try {
+                        $whClient->deleteWebhook($storeId, $webhook->getData()['id']);
+                    } catch (\Throwable $e) {
+                        // A stale webhook that can't be removed only causes rejected deliveries.
+                    }
+                }
             }
         }
         return false;
@@ -253,8 +259,34 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
             return $webhook;
 
         } catch (\Throwable $e) {
-            $GLOBALS['messageStack']->add_session($this->languageTextManager->get_text('coinsnap_webhook_error','coinsnap') . ' ('.$e->getMessage().')','error');
+            $GLOBALS['messageStack']->add_session($this->languageTextManager->get_text('coinsnap_webhook_error','coinsnap'),'error');
             return false;
         }
+    }
+
+    // The page gets no webhook secret and only a hint of each API key.
+    private function configurationForView(): array
+    {
+        $configuration = $this->configuration->get_all();
+        unset($configuration['webhook']);
+        foreach (['apikey', 'btcpay_apikey'] as $key) {
+            $value = (string) ($configuration[$key] ?? '');
+            $configuration[$key . '_hint'] = $value === '' ? '' : '••••••••' . substr($value, -4);
+            $configuration[$key] = '';
+        }
+        return $configuration;
+    }
+
+    // Empty key fields keep the stored keys; a changed BTCPay URL never gets the stored BTCPay key.
+    private function keepStoredApiKeys(array $posted): array
+    {
+        if (($posted['apikey'] ?? '') === '') {
+            $posted['apikey'] = (string) $this->configuration->get('apikey');
+        }
+        $btcpayUrlUnchanged = (string) ($posted['btcpay_serverurl'] ?? '') === (string) $this->configuration->get('btcpay_serverurl');
+        if (($posted['btcpay_apikey'] ?? '') === '' && $btcpayUrlUnchanged) {
+            $posted['btcpay_apikey'] = (string) $this->configuration->get('btcpay_apikey');
+        }
+        return $posted;
     }
 }

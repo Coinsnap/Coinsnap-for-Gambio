@@ -1,5 +1,9 @@
 <?php
 
+
+if (file_exists(dirname(__DIR__) . '/../../loader.php')) {
+    require_once dirname(__DIR__) . '/../../loader.php';
+}
 use GXModules\Library\{
     Core\Settings\Struct\Settings,
     Helper\CoinsnapHelper
@@ -113,7 +117,8 @@ class Coinsnap_CheckoutProcessProcess extends Coinsnap_CheckoutProcessProcess_pa
 		
         $order = (array)$this->coo_order;
         
-        $amount = number_format($order['info']['total'],2);
+        // No thousands separator: "1,234.56" became 1.00 and broke checkout for orders of 1000 or more.
+        $amount = number_format((float) $order['info']['total'], 2, '.', '');
         $currency = $order['info']['currency'];
 	$buyerName = $order['customer']['firstname'].' '.$order['customer']['lastname'];
 	$buyerEmail = $order['customer']['email_address'];
@@ -158,29 +163,33 @@ class Coinsnap_CheckoutProcessProcess extends Coinsnap_CheckoutProcessProcess_pa
                 }
             }
         
-            $camount = ($currency === 'BTC')? \Coinsnap\Util\PreciseNumber::parseFloat($amount,8) : \Coinsnap\Util\PreciseNumber::parseFloat($amount,2);
-            
-            $invoice = $client->createInvoice(
-                $this->getStoreId(),  
-                $currency,
-		$camount,
-		$order_id,
-		$buyerEmail,
-		$buyerName, 
-		$redirectUrl,
-		COINSNAP_REFERRAL_CODE,     
-		$metadata,
-                $redirectAutomatically,
-                $walletMessage
-            );
-	
-            $payurl = $invoice->getData()['checkoutLink'];
-            
-            if (!empty($payurl)){				
-                $comment = 'Invoice URL: '.$payurl;
-                $this->save_log_record('info', 'Invoice is loaded', 'Invoice URL: '.$payurl);
-                $invoice_id = $invoice->getData()['id'];
-                $_SESSION['transactionID'] = $invoice_id;			
+            $camount = ($currency === 'BTC')? \Coinsnap\Util\PreciseNumber::parseFloat((float) $amount,8) : \Coinsnap\Util\PreciseNumber::parseFloat((float) $amount,2);
+
+            try {
+                $invoiceData = $client->createInvoice(
+                    $this->getStoreId(),
+                    $currency,
+                    $camount,
+                    $order_id,
+                    $buyerEmail,
+                    $buyerName,
+                    $redirectUrl,
+                    COINSNAP_REFERRAL_CODE,
+                    $metadata,
+                    $redirectAutomatically,
+                    $walletMessage
+                )->getData();
+            } catch (\Throwable $e) {
+                $invoiceData = [];
+            }
+
+            $payurl = $invoiceData['checkoutLink'] ?? '';
+
+            if (!empty($payurl) && !empty($invoiceData['id'])){
+                $invoice_id = (string) $invoiceData['id'];
+                // Only this invoice, for this amount and currency, can pay the order.
+                (new \GXModules\Library\Webhook\InvoiceRecord())->remember($invoice_id, (int) $order_id, $camount->__toString(), $currency);
+                $_SESSION['transactionID'] = $invoice_id;
                 return $payurl;
             }
             else {

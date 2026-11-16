@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use Coinsnap\Result\TransactionState;
 use GXModules\Shop\Classes\Model\CoinsnapTransactionModel;
 
 class Coinsnap_OrderExtender extends Coinsnap_OrderExtender_parent {
@@ -27,8 +26,8 @@ class Coinsnap_OrderExtender extends Coinsnap_OrderExtender_parent {
 	$contentView->set_content_data('xtPrice', $xtPrice);
 	$contentView->set_content_data('totalOrderAmount', round($transactionInfo['info']['total'], 2));
 	$contentView->set_content_data('transactionState', $transactionState);
-	$contentView->set_content_data('processingState', TransactionState::PROCESSING);
-	$contentView->set_content_data('settledState', TransactionState::SETTLED);
+	$contentView->set_content_data('processingState', CoinsnapTransactionModel::TRANSACTION_STATE_PROCESSING);
+	$contentView->set_content_data('settledState', CoinsnapTransactionModel::TRANSACTION_STATE_SETTLED);
         $contentView->set_content_data('showButtonsAfterFullfill', $showButtonsAfterFullfill);
 
 	$languageTextManager = MainFactory::create_object(LanguageTextManager::class, array(), true);

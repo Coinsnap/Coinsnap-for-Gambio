@@ -174,6 +174,16 @@ Use the support area in your Coinsnap merchant account or join the official [Coi
 
 ## Changelog
 
+### 1.2.0
+
+- Security: Webhooks are verified with the timestamped `X-Coinsnap-Signature` header (Coinsnap) or `BTCPay-Sig` (BTCPay Server), with a timing-safe comparison. A missing webhook secret rejects every webhook.
+- Security: Unverified webhook requests are no longer stored in the `coinsnap_callback` table. Before, anyone could add rows with any content.
+- Security: An order is set to Settled only when the invoice is settled for the amount and currency this module asked for, and only once. A paid order is no longer moved back to Expired or New by a later webhook. BTCPay invoices marked settled by hand are not accepted.
+- Security: API keys are no longer shown in the admin. Leave a key field empty to keep the stored key; a changed BTCPay Server URL needs the key entered again.
+- Fix: The module referenced a `TransactionState` class that does not exist, which broke checkout after the invoice was created, webhook processing and the admin order view.
+- Fix: Checkout failed for orders of 1000 or more.
+- Fix: A failed invoice creation no longer crashes checkout, and a payment server outage while saving the settings no longer replaces the webhook.
+
 ### 1.1.0 — 2026-04-03
 
 - Added BTCPay Server as an alternative Bitcoin payment gateway.

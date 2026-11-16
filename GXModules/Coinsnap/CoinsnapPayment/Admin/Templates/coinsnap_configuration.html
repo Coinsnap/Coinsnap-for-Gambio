@@ -105,7 +105,7 @@
 		<div class="form-group coinsnap">
                     <label class="col-sm-4 control-label">{$txt.coinsnap_apikey}</label>
                     <div class="col-sm-7">
-                        <input type="text" class="form-control" name="configuration[apikey]" id="apikey" value="{$content.configuration['apikey']}" required="required" />
+                        <input type="password" class="form-control" name="configuration[apikey]" id="apikey" value="" autocomplete="new-password" placeholder="{$content.configuration['apikey_hint']}" />
                     </div>
                     <div class="col-sm-1">
                         <span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_apikey_msg}</span>
@@ -134,7 +134,7 @@
 		<div class="form-group btcpay">
                     <label class="col-sm-4 control-label">{$txt.coinsnap_btcpay_apikey}</label>
                     <div class="col-sm-7">
-                        <input type="text" class="form-control" name="configuration[btcpay_apikey]" id="btcpay_apikey" value="{$content.configuration['btcpay_apikey']}" required="required" />
+                        <input type="password" class="form-control" name="configuration[btcpay_apikey]" id="btcpay_apikey" value="" autocomplete="new-password" placeholder="{$content.configuration['btcpay_apikey_hint']}" />
                     </div>
                     <div class="col-sm-1">
                         <span class="tooltip-icon" data-gx-widget="tooltip_icon" data-tooltip_icon-type="info">{$txt.coinsnap_btcpay_apikey_msg}</span>

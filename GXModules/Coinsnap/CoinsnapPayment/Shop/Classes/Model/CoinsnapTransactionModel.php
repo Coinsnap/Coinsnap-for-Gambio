@@ -3,7 +3,6 @@
 namespace GXModules\Shop\Classes\Model;
 
 use GXModules\Library\Core\Settings\Struct\Settings;
-use Coinsnap\Result\TransactionState;
 use GXModules\Shop\Classes\Entity\CoinsnapTransactionEntity;
 
 class CoinsnapTransactionModel {
@@ -34,7 +33,7 @@ class CoinsnapTransactionModel {
             'data' => json_encode($orderData),
             'payment_method' => $orderData['info']['payment_method'],
             'order_id' => $orderId,
-            'state' => TransactionState::NEW,
+            'state' => CoinsnapTransactionModel::TRANSACTION_STATE_NEW,
             'created_at' => date('Y-m-d H:i:s')
 	];
 	xtc_db_perform('coinsnap_transactions', $insertData, 'insert');
