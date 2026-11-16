@@ -35,6 +35,13 @@ class InvoiceRecord
         return is_array($row) && $row !== [] ? $row : null;
     }
 
+    // Whether any invoice has already paid this order.
+    public function orderIsPaid(int $orderId): bool
+    {
+        $row = xtc_db_fetch_array(xtc_db_query("SELECT 1 AS paid FROM `" . self::TABLE . "` WHERE `order_id` = " . (int) $orderId . " AND `paid_at` IS NOT NULL LIMIT 1"));
+        return is_array($row) && $row !== [];
+    }
+
     // True for the first caller only, so two webhooks for one invoice can't both settle the order.
     public function claimPaid(string $invoiceId, int $orderId, string $amount, string $currency): bool
     {

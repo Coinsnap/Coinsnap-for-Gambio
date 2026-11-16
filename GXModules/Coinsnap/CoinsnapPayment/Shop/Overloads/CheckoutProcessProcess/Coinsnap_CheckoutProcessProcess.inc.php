@@ -26,8 +26,9 @@ class Coinsnap_CheckoutProcessProcess extends Coinsnap_CheckoutProcessProcess_pa
         
         $this->configuration = MainFactory::create('CoinsnapStorage');
         
+        // Other payment methods run Gambio's own checkout only.
         if (strpos($_SESSION['payment'] ?? '', 'coinsnap') === false) {
-            parent::proceed();
+            return parent::proceed();
 	}
 		
 	$_SESSION['gambio_hub_selection'] = $_SESSION['payment'];

@@ -54,7 +54,7 @@ class CoinsnapTransactionModel {
     */
     public function getFromDbByOrderId(int $orderId): array {
         $query = xtc_db_query("SELECT * FROM `coinsnap_transactions` WHERE order_id = '" . xtc_db_input($orderId)."'");
-        return xtc_db_fetch_array($query);
+        return xtc_db_fetch_array($query) ?: [];
     }
     
     /**
@@ -63,6 +63,6 @@ class CoinsnapTransactionModel {
     */
     public function getFromDbByTransactionId(string $transactionId): array {
         $query = xtc_db_query("SELECT * FROM `coinsnap_transactions` WHERE transaction_id = '" . xtc_db_input($transactionId)."'");
-        return xtc_db_fetch_array($query);
+        return xtc_db_fetch_array($query) ?: [];
     }
 }

@@ -168,6 +168,11 @@ class CoinsnapWebhookController extends HttpViewController {
             $this->logInfo('paid', $invoiceId);
             return;
         }
+        // Only while the shop order is still awaiting payment: a status the merchant set by hand is kept.
+        if (!$this->orderAwaitsPayment($orderId)) {
+            $this->logInfo('no change: order no longer awaiting payment', $invoiceId);
+            return;
+        }
         if ($decision === InvoiceDecision::PROCESSING && in_array($state, [$new, ''], true)) {
             $this->updateOrderAndTransactionStatus($processing, $orderId);
             $this->logInfo('status processing', $invoiceId);
@@ -179,6 +184,21 @@ class CoinsnapWebhookController extends HttpViewController {
             return;
         }
         $this->logInfo('no change', $invoiceId);
+    }
+
+    private function orderAwaitsPayment(int $orderId): bool
+    {
+        if ($this->invoiceRecord()->orderIsPaid($orderId)) {
+            return false;
+        }
+        $row = xtc_db_fetch_array(xtc_db_query("SELECT `orders_status` FROM `orders` WHERE `orders_id` = " . (int) $orderId));
+        $current = is_array($row) ? (int) ($row['orders_status'] ?? 0) : 0;
+        $awaiting = [
+            defined('DEFAULT_ORDERS_STATUS_ID') ? (int) DEFAULT_ORDERS_STATUS_ID : 1,
+            $this->getOrderStatusId(CoinsnapTransactionModel::TRANSACTION_STATE_NEW),
+            $this->getOrderStatusId(CoinsnapTransactionModel::TRANSACTION_STATE_PROCESSING),
+        ];
+        return $current > 0 && in_array($current, $awaiting, true);
     }
 
     private function logInfo(string $reason, string $invoiceId = ''): void
