@@ -12,7 +12,6 @@ if (!defined('COINSNAP_SERVER_PATH')){
         
 
 use GXModules\Library\Core\{
-	Api\WebHooks\Service\WebhooksService,
 	Api\WebHooks\Struct\WebHookRequest,
 	Settings\Struct\Settings
 };
@@ -25,7 +24,6 @@ use GXModules\Library\Webhook\Signature;
 class CoinsnapWebhookController extends HttpViewController {
 	
     public $configuration;   //  @var $configuration
-    protected $webHooksService; //  @var WebhooksService $webHooksService
     public $settings;           //  @var Settings $settings
 
     /**

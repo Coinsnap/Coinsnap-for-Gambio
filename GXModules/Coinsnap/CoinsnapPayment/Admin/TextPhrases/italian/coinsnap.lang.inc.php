@@ -122,4 +122,6 @@ $t_language_text_section_content_array = [
 	'configuration_sort_order_desc' => '&nbsp;',
 	'would_you_like_to_enable_this_payment_method' => 'Vuoi abilitare questo metodo di pagamento?',
     	'payment_method_not_available' => 'Il metodo di pagamento non è disponibile per questa transazione. Si prega di controllare il proprio indirizzo o valuta',
+	'coinsnap_invoice' => 'Fattura',
+	'coinsnap_state' => 'Stato',
 ];

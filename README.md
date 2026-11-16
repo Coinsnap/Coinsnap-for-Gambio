@@ -181,6 +181,7 @@ Use the support area in your Coinsnap merchant account or join the official [Coi
 - Security: An order is set to Settled only when the invoice is settled for the amount and currency this module asked for, and only once. A paid order is no longer moved back to Expired or New by a later webhook. BTCPay invoices marked settled by hand are not accepted.
 - Security: API keys are no longer shown in the admin. Leave a key field empty to keep the stored key; a changed BTCPay Server URL needs the key entered again.
 - Fix: The module referenced a `TransactionState` class that does not exist, which broke checkout after the invoice was created, webhook processing and the admin order view.
+- Fix: The order page's Coinsnap panel is read-only (invoice, status, amount) and appears only on Coinsnap orders. It offered complete, cancel, refund and document downloads left over from another payment module, none of which Coinsnap supports; each failed with a fatal error, and orders paid another way could not be opened.
 - Fix: Checkout failed for orders of 1000 or more.
 - Fix: A failed invoice creation no longer crashes checkout, and a payment server outage while saving the settings no longer replaces the webhook.
 
