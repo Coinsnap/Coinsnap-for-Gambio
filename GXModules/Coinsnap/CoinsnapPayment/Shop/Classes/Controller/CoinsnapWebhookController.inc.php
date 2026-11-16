@@ -191,14 +191,19 @@ class CoinsnapWebhookController extends HttpViewController {
         if ($this->invoiceRecord()->orderIsPaid($orderId)) {
             return false;
         }
-        $row = xtc_db_fetch_array(xtc_db_query("SELECT `orders_status` FROM `orders` WHERE `orders_id` = " . (int) $orderId));
-        $current = is_array($row) ? (int) ($row['orders_status'] ?? 0) : 0;
+        $current = $this->shopOrderStatus($orderId);
         $awaiting = [
             defined('DEFAULT_ORDERS_STATUS_ID') ? (int) DEFAULT_ORDERS_STATUS_ID : 1,
             $this->getOrderStatusId(CoinsnapTransactionModel::TRANSACTION_STATE_NEW),
             $this->getOrderStatusId(CoinsnapTransactionModel::TRANSACTION_STATE_PROCESSING),
         ];
         return $current > 0 && in_array($current, $awaiting, true);
+    }
+
+    protected function shopOrderStatus(int $orderId): int
+    {
+        $row = xtc_db_fetch_array(xtc_db_query("SELECT `orders_status` FROM `orders` WHERE `orders_id` = " . (int) $orderId));
+        return is_array($row) ? (int) ($row['orders_status'] ?? 0) : 0;
     }
 
     private function logInfo(string $reason, string $invoiceId = ''): void
