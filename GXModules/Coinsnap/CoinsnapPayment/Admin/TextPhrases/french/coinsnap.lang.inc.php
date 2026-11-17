@@ -49,6 +49,8 @@ $t_language_text_section_content_array = [
     'coinsnap_webhook_exists'          => 'Le webhook existe déjà, ignorer la création du webhook',
     'coinsnap_webhook_registered'      => 'Enregistrement réussi d\'un nouveau webhook sur Coinsnap Server',
     'coinsnap_webhook_error'           => 'Impossible d\'enregistrer un nouveau webhook sur la boutique',
+    'coinsnap_btcpay_key_refused'      => 'La clé API BTCPay n\'a pas été enregistrée : elle doit être limitée à cette boutique BTCPay et ne contenir que des autorisations de boutique. Créez une clé pour cette boutique uniquement et saisissez-la à nouveau.',
+    'coinsnap_btcpay_key_unrestricted' => 'La clé API BTCPay enregistrée n\'est pas limitée à cette boutique BTCPay. Veuillez la remplacer par une clé ayant des autorisations pour cette boutique uniquement.',
     
     'text_order_amount'                 => 'Le montant minimum de commande est de',
     'error_connection'                  => 'La connexion à l\'API n\'est pas établie',

@@ -101,7 +101,7 @@ If you prefer to use your own BTCPay Server:
 
 1. Open the Coinsnap module configuration.
 2. Select **BTCPay Server** as the provider.
-3. Enter your BTCPay Server URL, Store ID and API key.
+3. Enter your BTCPay Server URL, Store ID and API key. Create the key for this one store only, with store permissions only (for example `btcpay.store.cancreateinvoice`, `btcpay.store.canviewinvoices`, `btcpay.store.canviewstoresettings`, `btcpay.store.webhooks.canmodifywebhooks`). Unrestricted keys and keys valid for all stores are refused.
 4. Save the configuration.
 5. Test the checkout flow before going live.
 
@@ -184,6 +184,12 @@ Use the support area in your Coinsnap merchant account or join the official [Coi
 - Fix: The order page's Coinsnap panel is read-only (invoice, status, amount) and appears only on Coinsnap orders. It offered complete, cancel, refund and document downloads left over from another payment module, none of which Coinsnap supports; each failed with a fatal error, and orders paid another way could not be opened.
 - Fix: Checkout failed for orders of 1000 or more.
 - Fix: A failed invoice creation no longer crashes checkout, and a payment server outage while saving the settings no longer replaces the webhook.
+- Security: Each provider and store has its own webhook secret. After updating, open the Coinsnap module settings and save them once: this replaces the webhook and its secret. Until then the previous secret keeps working.
+- Security: A new BTCPay API key is saved only if BTCPay reports it is limited to the configured store. Changing the BTCPay Server URL without entering a key removes the stored key.
+- Security: Orders placed before 1.2.0 (no invoice record) are settled by a webhook only within one day of the order.
+- Security: If the order cannot be updated after a payment, the webhook replies 503 so the provider retries, instead of recording the invoice as processed.
+- Fix: Unticking "Discount enabled" or "Redirect after payment" now turns the option off. Before, the old value was kept.
+- Fix: Returning to the payment page with an unpaid Coinsnap invoice no longer ends in a fatal error.
 
 ### 1.1.0 — 2026-04-03
 

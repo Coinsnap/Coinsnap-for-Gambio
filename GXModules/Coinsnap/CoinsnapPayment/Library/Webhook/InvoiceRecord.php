@@ -42,8 +42,8 @@ class InvoiceRecord
         return is_array($row) && $row !== [];
     }
 
-    // True for the first caller only, so two webhooks for one invoice can't both settle the order.
-    public function claimPaid(string $invoiceId, int $orderId, string $amount, string $currency): bool
+    // A claim token for the first caller only (null for every later one), so two webhooks for one invoice can't both settle the order.
+    public function claimPaid(string $invoiceId, int $orderId, string $amount, string $currency): ?string
     {
         $id = xtc_db_input($invoiceId);
         xtc_db_query("INSERT IGNORE INTO `" . self::TABLE . "` (`invoice_id`, `order_id`, `amount`, `currency`) VALUES ('"
@@ -54,6 +54,13 @@ class InvoiceRecord
         xtc_db_query("UPDATE `" . self::TABLE . "` SET `paid_at` = NOW(), `claim` = '" . $token . "' WHERE `invoice_id` = '"
             . $id . "' AND `order_id` = " . (int) $orderId . " AND `paid_at` IS NULL");
         $row = xtc_db_fetch_array(xtc_db_query("SELECT `claim` FROM `" . self::TABLE . "` WHERE `invoice_id` = '" . $id . "'"));
-        return is_array($row) && ($row['claim'] ?? '') === $token;
+        return is_array($row) && ($row['claim'] ?? '') === $token ? $token : null;
+    }
+
+    // Undoes a claim whose order update failed, so the provider's retry can settle the order instead of finding it "already processed".
+    public function releaseClaim(string $invoiceId, string $token): void
+    {
+        xtc_db_query("UPDATE `" . self::TABLE . "` SET `paid_at` = NULL, `claim` = NULL WHERE `invoice_id` = '"
+            . xtc_db_input($invoiceId) . "' AND `claim` = '" . xtc_db_input($token) . "'");
     }
 }
