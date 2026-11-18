@@ -22,6 +22,9 @@ use GXModules\Library\Webhook\InvoiceRecord;
 use GXModules\Library\Webhook\Signature;
 
 class CoinsnapWebhookController extends HttpViewController {
+
+    // Orders placed before 1.2.0 have no invoice record; they are accepted against their order total for one day only.
+    public const LEGACY_WINDOW_SECONDS = 86400;
 	
     public $configuration;   //  @var $configuration
     public $settings;           //  @var Settings $settings
@@ -63,8 +66,9 @@ class CoinsnapWebhookController extends HttpViewController {
             $this->configuration = \MainFactory::create('CoinsnapStorage');
         }
 
-        $rawPostData = (string) file_get_contents('php://input');
-        $webhook = json_decode((string) $this->configuration->get('webhook'), true);
+        $rawPostData = $this->rawBody();
+        // This store's own secret; the shared record of older versions only until the settings are saved again.
+        $webhook = $this->configuration->getWebhook($this->getProvider(), (string) $this->getStoreId(), true);
         $secret = is_array($webhook) ? (string) ($webhook['secret'] ?? '') : '';
 
         $problem = ($this->getProvider() === 'btcpay')
@@ -105,7 +109,12 @@ class CoinsnapWebhookController extends HttpViewController {
             $this->reply(200, 'OK');
         }
         $orderId = (int) $transaction['order_id'];
-        $expected = $this->invoiceRecord()->find($invoiceId, $orderId) ?? $this->legacyExpected($transaction);
+        $expected = $this->invoiceRecord()->find($invoiceId, $orderId) ?? $this->legacyExpected($transaction, time());
+        if ($expected === null) {
+            // No record of what this invoice asked for, and too old for the upgrade window.
+            $this->logInfo('no invoice record', $invoiceId);
+            $this->reply(200, 'OK');
+        }
 
         $decision = InvoiceDecision::decide($invoice, $this->getProvider() === 'btcpay', (string) $expected['amount'], (string) $expected['currency']);
         if ($decision !== InvoiceDecision::PAID && ($claimsPaid || $decision === InvoiceDecision::MISMATCH)) {
@@ -121,6 +130,11 @@ class CoinsnapWebhookController extends HttpViewController {
     {
         http_response_code($status);
         die($message);
+    }
+
+    protected function rawBody(): string
+    {
+        return (string) file_get_contents('php://input');
     }
 
     private function requestHeader(string $name): string
@@ -139,9 +153,14 @@ class CoinsnapWebhookController extends HttpViewController {
         return new InvoiceRecord();
     }
 
-    // Orders placed before 1.2.0 have no record; check against what was sent then.
-    private function legacyExpected(array $transaction): array
+    // Orders placed before 1.2.0 have no record; check against what was sent then, and only for a day.
+    // Their invoices expired long before that; afterwards an order without a record is never settled by a webhook.
+    private function legacyExpected(array $transaction, int $now): ?array
     {
+        $createdAt = strtotime((string) ($transaction['created_at'] ?? ''));
+        if ($createdAt === false || $createdAt < $now - self::LEGACY_WINDOW_SECONDS) {
+            return null;
+        }
         $order = json_decode((string) ($transaction['data'] ?? ''), true);
         $info = is_array($order['info'] ?? null) ? $order['info'] : [];
         return ['amount' => number_format((float) ($info['total'] ?? 0), 2, '.', ''), 'currency' => (string) ($info['currency'] ?? '')];
@@ -160,11 +179,19 @@ class CoinsnapWebhookController extends HttpViewController {
                 $this->logInfo('no change from ' . $state, $invoiceId);
                 return;
             }
-            if (!$this->invoiceRecord()->claimPaid($invoiceId, $orderId, (string) $expected['amount'], (string) $expected['currency'])) {
+            $claim = $this->invoiceRecord()->claimPaid($invoiceId, $orderId, (string) $expected['amount'], (string) $expected['currency']);
+            if ($claim === null) {
                 $this->logInfo('already processed', $invoiceId);
                 return;
             }
-            $this->updateOrderAndTransactionStatus(CoinsnapTransactionModel::TRANSACTION_STATE_SETTLED, $orderId);
+            try {
+                $this->updateOrderAndTransactionStatus(CoinsnapTransactionModel::TRANSACTION_STATE_SETTLED, $orderId);
+            } catch (\Throwable $e) {
+                // Never "processed" without the order being paid: release the claim and let the provider retry.
+                $this->invoiceRecord()->releaseClaim($invoiceId, $claim);
+                $this->logInfo('retry: order update failed', $invoiceId);
+                $this->reply(503, 'Retry');
+            }
             $this->logInfo('paid', $invoiceId);
             return;
         }
@@ -286,7 +313,7 @@ class CoinsnapWebhookController extends HttpViewController {
 	 * @param int $orderId
 	 * @throws Exception
      */
-    private function updateOrderAndTransactionStatus(string $newStatus, int $orderId): void {
+    protected function updateOrderAndTransactionStatus(string $newStatus, int $orderId): void {
         $this->updateOrderStatus($newStatus, $orderId);
         $transactionModel = new CoinsnapTransactionModel();
         $transactionModel->updateTransactionStatus($newStatus, $orderId);
@@ -406,7 +433,7 @@ class CoinsnapWebhookController extends HttpViewController {
 	 * @return int
 	 * @throws Exception
 	 */
-	private function getOrderStatusId(string $currentOrderStatusName): int
+	protected function getOrderStatusId(string $currentOrderStatusName): int
 	{
 		$orderStatusId = 0;
 		$orderStatusService = StaticGXCoreLoader::getService('OrderStatus');

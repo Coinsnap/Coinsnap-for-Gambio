@@ -8,6 +8,7 @@ if (file_exists(dirname(__DIR__) . '/../../loader.php')) {
 use Coinsnap\Client\Invoice;
 use Coinsnap\Client\Store;
 use Coinsnap\Client\Webhook;
+use GXModules\Library\Btcpay\KeyPermissions;
 
 if(!defined('COINSNAP_GAMBIO_VERSION')){ define( 'COINSNAP_GAMBIO_VERSION', '1.2.0' ); }
 if(!defined('COINSNAP_SERVER_URL')){ define( 'COINSNAP_SERVER_URL', 'https://app.coinsnap.io' ); }
@@ -29,6 +30,11 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
     
     public const COINSNAP_WEBHOOK_EVENTS = ['New','Expired','Settled','Processing'];
     public const BTCPAY_WEBHOOK_EVENTS = ['InvoiceCreated','InvoiceExpired','InvoiceSettled','InvoiceProcessing'];
+
+    // The only settings the form may write. Anything else posted (for example a webhook record) is ignored.
+    private const FORM_FIELDS = ['provider','storeid','apikey','btcpay_serverurl','btcpay_storeid','btcpay_apikey','autoredirect','returnurl',
+        'discount_enabled','discount_type','discount_amount','discount_amount_limit','discount_percentage'];
+    private const CHECKBOXES = ['autoredirect','discount_enabled'];
 
     protected function _init(): void {
         $this->pageTitle = 'Coinsnap ' . $this->languageTextManager->get_text('payment', 'coinsnap');
@@ -60,8 +66,8 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
     public function actionSaveConfiguration(): RedirectHttpControllerResponse {
         $this->_validatePageToken();
 
-        $newConfiguration = $this->keepStoredApiKeys((array) $this->_getPostData('configuration'));
-        $oldConfiguration = $this->configuration->get_all();
+        $newConfiguration = $this->formSettings((array) $this->_getPostData('configuration'));
+        $newConfiguration = $this->keepStoredApiKeys($this->refuseUnrestrictedBtcpayKey($newConfiguration));
 
         //  We save new configuration 
         foreach ($newConfiguration as $key => $value) {
@@ -95,7 +101,7 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
             if ($this_store) {
                 
                 try {
-                    $webhookExists = $this->webhookExists($apiUrl, $apiKey, $storeId);
+                    $webhookExists = $this->webhookExists($apiUrl, $apiKey, $storeId, $provider);
                 } catch (\Throwable $e) {
                     // An API error is not "no webhook": registering now would replace a working secret.
                     $webhookExists = true;
@@ -202,34 +208,33 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
         return $webhook_url = xtc_catalog_href_link("shop.php", 'do=CoinsnapWebhook/Index');
     }
     
-    public function webhookExists(string $apiUrl, string $apiKey, string $storeId): bool{
+    // True only when this store's own webhook record (secret included) matches a webhook on the server.
+    public function webhookExists(string $apiUrl, string $apiKey, string $storeId, string $provider): bool{
         
         $whClient = new \Coinsnap\Client\Webhook($apiUrl, $apiKey);
-        if($this->configuration->get('webhook')){
+        $storedWebhook = $this->configuration->getWebhook($provider, $storeId);
             
-            $storedWebhook = json_decode($this->configuration->get('webhook'),true);
-                
-            if ($storedWebhook && is_array($storedWebhook)) {
+        if ($storedWebhook !== null && !empty($storedWebhook['id']) && !empty($storedWebhook['secret'])) {
 
-                // Throws when the API can't be asked; the caller must not treat that as "no webhook".
-                try {
-                    $existingWebhook = $whClient->getWebhook($storeId, $storedWebhook['id']);
-                    if ($existingWebhook->getData()['id'] === $storedWebhook['id'] && strpos($existingWebhook->getData()['url'], $storedWebhook['url']) !== false) {
-                        return true;
-                    }
-                } catch (\Coinsnap\Exception\RequestException $e) {
-                    if (!in_array($e->getCode(), [400, 404], true)) {
-                        throw $e;
-                    }
+            // Throws when the API can't be asked; the caller must not treat that as "no webhook".
+            try {
+                $existingWebhook = $whClient->getWebhook($storeId, (string) $storedWebhook['id']);
+                if ($existingWebhook->getData()['id'] === $storedWebhook['id'] && strpos($existingWebhook->getData()['url'], $storedWebhook['url']) !== false) {
+                    return true;
+                }
+            } catch (\Coinsnap\Exception\RequestException $e) {
+                if (!in_array($e->getCode(), [400, 404], true)) {
+                    throw $e;
                 }
             }
-            foreach ($whClient->getWebhooks($storeId) as $webhook) {
-                if (strpos($webhook->getData()['url'], $this->getWebhookUrl()) !== false) {
-                    try {
-                        $whClient->deleteWebhook($storeId, $webhook->getData()['id']);
-                    } catch (\Throwable $e) {
-                        // A stale webhook that can't be removed only causes rejected deliveries.
-                    }
+        }
+        // No usable record (first save, or a record from before 1.2.0): remove this shop's old webhooks, so their secret stops working.
+        foreach ($whClient->getWebhooks($storeId) as $webhook) {
+            if (strpos($webhook->getData()['url'], $this->getWebhookUrl()) !== false) {
+                try {
+                    $whClient->deleteWebhook($storeId, $webhook->getData()['id']);
+                } catch (\Throwable $e) {
+                    // A stale webhook that can't be removed only causes rejected deliveries.
                 }
             }
         }
@@ -254,7 +259,7 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
             ];
             
             
-            $this->configuration->set('webhook', json_encode($webhook_data));
+            $this->configuration->setWebhook($provider, $storeId, $webhook_data);
             
             return $webhook;
 
@@ -268,13 +273,66 @@ class CoinsnapModuleCenterModuleController extends AbstractModuleCenterModuleCon
     private function configurationForView(): array
     {
         $configuration = $this->configuration->get_all();
-        unset($configuration['webhook']);
+        foreach (array_keys($configuration) as $key) {
+            if (strpos((string) $key, 'webhook') === 0 || $key === 'seclog') {
+                unset($configuration[$key]);
+            }
+        }
         foreach (['apikey', 'btcpay_apikey'] as $key) {
             $value = (string) ($configuration[$key] ?? '');
             $configuration[$key . '_hint'] = $value === '' ? '' : '••••••••' . substr($value, -4);
             $configuration[$key] = '';
         }
         return $configuration;
+    }
+
+    // Only the form's own fields; an unticked checkbox is saved as off.
+    private function formSettings(array $posted): array
+    {
+        $settings = [];
+        foreach (self::FORM_FIELDS as $field) {
+            $settings[$field] = is_scalar($posted[$field] ?? null) ? trim((string) $posted[$field]) : '';
+        }
+        foreach (self::CHECKBOXES as $field) {
+            $settings[$field] = $settings[$field] === '1' ? '1' : '0';
+        }
+        $settings['provider'] = $settings['provider'] === 'btcpay' ? 'btcpay' : 'coinsnap';
+        if ($settings['btcpay_serverurl'] !== '' && !KeyPermissions::isServerUrl($settings['btcpay_serverurl'])) {
+            $settings['btcpay_serverurl'] = '';
+        }
+        return $settings;
+    }
+
+    // A newly entered BTCPay key is saved only if BTCPay says it is limited to the configured store.
+    // An unrestricted key controls the merchant's whole BTCPay account, payouts included.
+    private function refuseUnrestrictedBtcpayKey(array $posted): array
+    {
+        $key = $posted['btcpay_apikey'];
+        $urlUnchanged = $posted['btcpay_serverurl'] === (string) $this->configuration->get('btcpay_serverurl');
+        $storedKey = $urlUnchanged ? (string) $this->configuration->get('btcpay_apikey') : '';
+        $checkStored = $key === '' && $storedKey !== '' && $posted['provider'] === 'btcpay';
+        if ($key === '' && !$checkStored) {
+            return $posted;
+        }
+        $permissions = $this->btcpayKeyPermissions($posted['btcpay_serverurl'], $checkStored ? $storedKey : $key);
+        if (KeyPermissions::acceptable($permissions ?? [], $posted['btcpay_storeid'])) {
+            return $posted;
+        }
+        if ($checkStored) {
+            // Keys saved before 1.2.0 keep working, but the merchant is asked to replace them.
+            if ($permissions !== null) {
+                $GLOBALS['messageStack']->add_session($this->languageTextManager->get_text('coinsnap_btcpay_key_unrestricted', 'coinsnap'), 'error');
+            }
+            return $posted;
+        }
+        $GLOBALS['messageStack']->add_session($this->languageTextManager->get_text('coinsnap_btcpay_key_refused', 'coinsnap'), 'error');
+        $posted['btcpay_apikey'] = '';
+        return $posted;
+    }
+
+    protected function btcpayKeyPermissions(string $serverUrl, string $apiKey): ?array
+    {
+        return KeyPermissions::fetch($serverUrl, $apiKey);
     }
 
     // Empty key fields keep the stored keys; a changed BTCPay URL never gets the stored BTCPay key.

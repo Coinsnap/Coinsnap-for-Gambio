@@ -82,15 +82,15 @@ class Store extends AbstractClient{
             }
             
             if(count($result['currencies']) < 1) {
+                // No URL or response body: the URL holds the store ID.
                 $result['error'] = 'NOT_LOADED';
-                $result['response'] = $response->getBody();
-                $result['url'] = $url;
             }
             
             return new \Coinsnap\Result\Store(array('code' => $response->getStatus(), 'result' => $result));
         }
         else {
-            throw $this->getExceptionByStatusCode(esc_html($method), esc_url($url), (int)esc_html($response->getStatus()), esc_html($response->getBody()));
+            // esc_html()/esc_url() are WordPress functions; in Gambio they ended in a fatal error.
+            throw $this->getExceptionByStatusCode($method, $url, (int)$response->getStatus(), $response->getBody());
         }
     }
     
