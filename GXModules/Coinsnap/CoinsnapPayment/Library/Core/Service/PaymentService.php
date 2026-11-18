@@ -136,12 +136,10 @@ class PaymentService {
 
 	$settings = new Settings($this->configuration);
         
-        print_r($settings);
 
         
         $apiClient = $settings->getApiClient();
         
-        print_R($apiClient);
 	$paymentMethodConfigurations = $apiClient->getPaymentMethodConfigurationService()->search($spaceId, $entityQuery);
 
 	usort($paymentMethodConfigurations, function (PaymentMethodConfiguration $item1, PaymentMethodConfiguration $item2) {

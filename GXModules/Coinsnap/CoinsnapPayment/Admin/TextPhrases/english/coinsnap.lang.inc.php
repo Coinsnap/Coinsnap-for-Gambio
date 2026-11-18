@@ -49,6 +49,8 @@ $t_language_text_section_content_array = [
     'coinsnap_webhook_exists'          => 'Webhook already exists, skipping webhook creation',
     'coinsnap_webhook_registered'      => 'Successfully registered a new webhook on Coinsnap Server',
     'coinsnap_webhook_error'           => 'Could not register a new webhook on the store',
+    'coinsnap_btcpay_key_refused'      => 'The BTCPay API key was not saved: it must be limited to this BTCPay store and contain store permissions only. Create a key for this store only and enter it again.',
+    'coinsnap_btcpay_key_unrestricted' => 'The saved BTCPay API key is not limited to this BTCPay store. Please replace it with a key that has permissions for this store only.',
     
     'text_order_amount'                 => 'Minimal order amount is',
     'error_connection'                  => 'API connection is not established',
@@ -121,4 +123,6 @@ $t_language_text_section_content_array = [
 	'configuration_sort_order_desc' => '&nbsp;',
 	'would_you_like_to_enable_this_payment_method' => 'Would you like to enable this payment method?',
 	'payment_method_not_available' => 'Payment method is not available for this transaction. Please check your address or currency',
+	'coinsnap_invoice' => 'Invoice',
+	'coinsnap_state' => 'Status',
 ];

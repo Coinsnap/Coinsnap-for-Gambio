@@ -50,14 +50,12 @@ $(function() {
     function setProvider(){
         
         if($('#provider').val() === 'btcpay'){
-            console.log('BTCPay');
             $('div.form-group.coinsnap').hide();
             $('div.form-group.coinsnap input[type=text]').removeAttr('required');
             $('div.form-group.btcpay').show();
             $('div.form-group.btcpay input[type=text]').attr('required','required');
         }
         else {
-            console.log('Coinsnap');
             $('div.form-group.btcpay').hide();
             $('div.form-group.btcpay input[type=text]').removeAttr('required');
             $('div.form-group.coinsnap').show();

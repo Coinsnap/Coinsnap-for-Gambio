@@ -3,7 +3,6 @@
 namespace GXModules\Shop\Classes\Model;
 
 use GXModules\Library\Core\Settings\Struct\Settings;
-use Coinsnap\Result\TransactionState;
 use GXModules\Shop\Classes\Entity\CoinsnapTransactionEntity;
 
 class CoinsnapTransactionModel {
@@ -34,7 +33,7 @@ class CoinsnapTransactionModel {
             'data' => json_encode($orderData),
             'payment_method' => $orderData['info']['payment_method'],
             'order_id' => $orderId,
-            'state' => TransactionState::NEW,
+            'state' => CoinsnapTransactionModel::TRANSACTION_STATE_NEW,
             'created_at' => date('Y-m-d H:i:s')
 	];
 	xtc_db_perform('coinsnap_transactions', $insertData, 'insert');
@@ -55,7 +54,7 @@ class CoinsnapTransactionModel {
     */
     public function getFromDbByOrderId(int $orderId): array {
         $query = xtc_db_query("SELECT * FROM `coinsnap_transactions` WHERE order_id = '" . xtc_db_input($orderId)."'");
-        return xtc_db_fetch_array($query);
+        return xtc_db_fetch_array($query) ?: [];
     }
     
     /**
@@ -64,6 +63,6 @@ class CoinsnapTransactionModel {
     */
     public function getFromDbByTransactionId(string $transactionId): array {
         $query = xtc_db_query("SELECT * FROM `coinsnap_transactions` WHERE transaction_id = '" . xtc_db_input($transactionId)."'");
-        return xtc_db_fetch_array($query);
+        return xtc_db_fetch_array($query) ?: [];
     }
 }

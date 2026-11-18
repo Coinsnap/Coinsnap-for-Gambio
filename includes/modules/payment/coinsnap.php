@@ -7,7 +7,7 @@ if (file_exists(dirname(__DIR__) . '/../../../GXModules/Coinsnap/CoinsnapPayment
     require_once dirname(__DIR__) . '/../../../GXModules/Coinsnap/CoinsnapPayment/loader.php';
 }
 
-if(!defined('COINSNAP_GAMBIO_VERSION')){ define( 'COINSNAP_GAMBIO_VERSION', '1.1.0' ); }
+if(!defined('COINSNAP_GAMBIO_VERSION')){ define( 'COINSNAP_GAMBIO_VERSION', '1.2.0' ); }
 if(!defined('COINSNAP_SERVER_URL')){ define( 'COINSNAP_SERVER_URL', 'https://app.coinsnap.io' ); }
 if(!defined('COINSNAP_CURRENCIES')){ define( 'COINSNAP_CURRENCIES', array("EUR","USD","SATS","BTC","CAD","JPY","GBP","CHF","RUB") ); }
 if(!defined('COINSNAP_API_PATH')){ define( 'COINSNAP_API_PATH', '/api/v1/' ); }
