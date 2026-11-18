@@ -412,6 +412,16 @@ namespace {
     CurlClient::$routes = [invoiceRoute('inv_1', 200, $paid)];
     check('webhook: pre-1.2.0 secret accepted until settings are saved', $c->send($body, coinsnapHeader($body, 'legacy-secret')) === 200 && $c->statusUpdates === [[42, 'Settled']]);
 
+    // The published 1.0.0 stored the secret as separate webhook_id / webhook_secret / webhook_url settings.
+    $c = freshWebhookSetup();
+    ConfigurationStorage::$data = array_filter(ConfigurationStorage::$data, fn ($k) => strpos($k, 'webhook') !== 0, ARRAY_FILTER_USE_KEY);
+    ConfigurationStorage::$data += ['webhook_id' => 'old', 'webhook_secret' => 'v100-secret', 'webhook_url' => 'https://shop.example/shop.php?do=CoinsnapWebhook/Index'];
+    CurlClient::$routes = [invoiceRoute('inv_1', 200, $paid)];
+    check('webhook: 1.0.0 secret accepted until settings are saved', $c->send($body, coinsnapHeader($body, 'v100-secret')) === 200 && $c->statusUpdates === [[42, 'Settled']]);
+    $c->configuration->setWebhook('coinsnap', 'CS-STORE-1', ['id' => 'new', 'secret' => 'new-secret', 'url' => 'u']);
+    $c->statusUpdates = [];
+    check('webhook: 1.0.0 secret refused once the settings are saved', $c->send($body, coinsnapHeader($body, 'v100-secret')) === 401 && (string) ConfigurationStorage::$data['webhook_secret'] === '');
+
     $c = freshWebhookSetup('btcpay');
     $bp = json_encode(['type' => 'InvoiceSettled', 'invoiceId' => 'inv_1']);
     CurlClient::$routes = [invoiceRoute('inv_1', 200, ['status' => 'Settled', 'amount' => '100.00', 'currency' => 'EUR'])];
