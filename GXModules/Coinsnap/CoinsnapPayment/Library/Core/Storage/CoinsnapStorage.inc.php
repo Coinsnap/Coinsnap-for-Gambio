@@ -63,18 +63,28 @@ class CoinsnapStorage extends ConfigurationStorage {
     }
 
     // The stored webhook (id, secret, url) of this provider and store, or null.
-    // $legacy: fall back to the single "webhook" record of versions before 1.2.0 until the merchant saves the settings again.
+    // $legacy: fall back to the single "webhook" record of versions before 1.2.0 until the merchant saves the settings again
+    // (1.1.0: one JSON "webhook" setting; 1.0.0: separate webhook_id / webhook_secret / webhook_url settings).
     public function getWebhook(string $provider, string $storeId, bool $legacy = false): ?array {
         $webhook = json_decode((string) $this->get(self::webhookKey($provider, $storeId)), true);
         if (!is_array($webhook) && $legacy) {
             $webhook = json_decode((string) $this->get('webhook'), true);
+        }
+        if (!is_array($webhook) && $legacy && (string) $this->get('webhook_secret') !== '') {
+            $webhook = [
+                'id' => (string) $this->get('webhook_id'),
+                'secret' => (string) $this->get('webhook_secret'),
+                'url' => (string) $this->get('webhook_url'),
+            ];
         }
         return is_array($webhook) ? $webhook : null;
     }
 
     public function setWebhook(string $provider, string $storeId, array $webhook): void {
         $this->set(self::webhookKey($provider, $storeId), json_encode($webhook));
-        // The old shared record is replaced by the per-store one.
-        $this->set('webhook', '');
+        // The old shared records (1.1.0 and 1.0.0) are replaced by the per-store one.
+        foreach (['webhook', 'webhook_id', 'webhook_secret', 'webhook_url'] as $key) {
+            $this->set($key, '');
+        }
     }
 }
