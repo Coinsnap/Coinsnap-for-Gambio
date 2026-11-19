@@ -128,15 +128,13 @@ class Coinsnap_CheckoutProcessProcess extends Coinsnap_CheckoutProcessProcess_pa
         $checkInvoice = $this->checkAmount($amount, strtoupper($currency));
         
         if ($checkInvoice['result'] === true) {
-            $metadata = [];
+            // orderId / orderNumber stay the Gambio order number; the webhook finds the order by invoice ID, not by these.
+            $metadata = $this->invoiceMetadata($order, (string) $order_id);
             $metadata['orderNumber'] = $order_id;
             $metadata['customerName'] = $buyerName;
+            $metadata['orderId'] = $order_id;
             
             $redirectUrl = xtc_href_link("checkout_success.php");
-            
-            if ($this->getProvider() === 'btcpay') {
-                $metadata['orderId'] = $order_id;
-            }
             
             $redirectAutomatically = ($this->configuration->get('autoredirect') > 0) ? true : false;
             $walletMessage = '';
@@ -215,6 +213,26 @@ class Coinsnap_CheckoutProcessProcess extends Coinsnap_CheckoutProcessProcess_pa
         }
     }
     
+    // Order, customer and line-item data for the invoice; never lets a missing field stop the checkout.
+    protected function invoiceMetadata(array $order, string $orderId): array {
+        try {
+            $totals = (is_object($this->coo_order_total ?? null) && method_exists($this->coo_order_total, 'output_array'))
+                ? (array) $this->coo_order_total->output_array() : [];
+        } catch (\Throwable $e) {
+            $totals = [];
+        }
+        $base = (defined('HTTPS_SERVER') && HTTPS_SERVER !== '') ? HTTPS_SERVER : (defined('HTTP_SERVER') ? HTTP_SERVER : '');
+        $catalog = trim(defined('DIR_WS_CATALOG') ? (string) DIR_WS_CATALOG : '', '/');
+        $orderUrl = $base !== ''
+            ? rtrim((string) $base, '/') . '/' . ($catalog !== '' ? $catalog . '/' : '') . 'admin/orders.php?oID=' . rawurlencode($orderId) . '&action=edit'
+            : '';
+        try {
+            return \GXModules\Library\Helper\InvoiceMetadata::build($order, $orderId, $totals, $orderUrl, defined('COINSNAP_GAMBIO_VERSION') ? COINSNAP_GAMBIO_VERSION : '');
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
     public function save_message_record($mode,$message){
         $languageTextManager = MainFactory::create_object(LanguageTextManager::class, array(), true);
         $GLOBALS['messageStack']->add('checkout_payment', $message, $mode);
